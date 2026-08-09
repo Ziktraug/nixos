@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# prepare-commit-msg hook
+# Prepends the current NixOS generation in brackets to the start of the commit message.
+# Skips if already present or if the generation cannot be determined.
+
+MSG_FILE="$1"
+
+# Attempt to determine the current NixOS system generation number without requiring root.
+get_nixos_generation() {
+	local resolved gen alt
+	resolved="$(readlink -f /nix/var/nix/profiles/system 2>/dev/null || true)"
+	if [ -n "$resolved" ]; then
+		gen="$(printf '%s' "$resolved" | sed -n 's/.*system-\([0-9][0-9]*\)-link/\1/p' | head -n1)"
+	fi
+	if [ -z "${gen:-}" ]; then
+		alt="$(ls -l /nix/var/nix/profiles/system 2>/dev/null | sed -n 's/.*system-\([0-9][0-9]*\)-link.*/\1/p' | head -n1)"
+		gen="$alt"
+	fi
+	printf '%s' "${gen:-}"
+}
+
+GEN="$(get_nixos_generation)"
+
+# If we cannot determine the generation, do nothing.
+if [ -z "$GEN" ]; then
+	exit 0
+fi
+
+# Find the first non-comment, non-empty line (subject line)
+subject_line="$(awk '($0 !~ /^#/ && $0 !~ /^[[:space:]]*$/) { print; exit }' "$MSG_FILE")"
+
+# If there's no subject yet, insert one containing just the generation.
+if [ -z "$subject_line" ]; then
+	awk -v gen="$GEN" 'NR==1 {print "[" gen "] "; print; next} {print}' "$MSG_FILE" > "$MSG_FILE.tmp"
+	mv "$MSG_FILE.tmp" "$MSG_FILE"
+	exit 0
+fi
+
+# Avoid adding the generation if it is already at the start of the subject line.
+if printf '%s' "$subject_line" | grep -qE "^\[${GEN}\]"; then
+	exit 0
+fi
+
+# Prepend "[GEN] " to the start of the subject line.
+awk -v gen="$GEN" '
+	BEGIN { done = 0 }
+	{
+		if (!done && $0 !~ /^#/ && $0 !~ /^[[:space:]]*$/) {
+			print "[" gen "] " $0
+			done = 1
+			next
+		}
+		print
+	}
+' "$MSG_FILE" > "$MSG_FILE.tmp"
+
+mv "$MSG_FILE.tmp" "$MSG_FILE"

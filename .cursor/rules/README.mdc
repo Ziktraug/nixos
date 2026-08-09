@@ -1,0 +1,143 @@
+---
+description: NixOS Configuration Rules Index and Guidelines
+globs: ["*.nix", "modules/**", "**/*.mdc"]
+alwaysApply: true
+---
+
+# NixOS Configuration Rules Index
+
+## Overview
+
+This directory contains Cursor rules for the NixOS modular configuration system. These rules provide guidance for:
+
+- **Architecture patterns** and development workflow
+- **Module creation** and best practices
+- **Nix language conventions** and code standards
+- **File management** for configuration files
+- **Critical policies** for system interaction
+
+## Rule Files
+
+### Always Applied Rule
+
+#### [nixos-commands.mdc](nixos-commands.mdc)
+- **Purpose**: Command delegation & validation policy
+- **Scope**: All Nix files and system operations
+- **Always Applied**: Yes
+- **Key Topics**: Run read-only checks yourself, delegate privileged commands
+
+### Reference Rules (Auto-Attached or On-Demand)
+
+#### [project-overview.mdc](project-overview.mdc)
+- **Purpose**: Project architecture and design principles
+- **Scope**: All Nix files and configuration
+- **Auto-Applied**: When editing core configuration files
+- **Key Topics**: Flake structure, module patterns, dotfiles system
+
+#### [module-patterns.mdc](module-patterns.mdc)
+- **Purpose**: Module creation templates and patterns
+- **Scope**: Module files and new applications
+- **Auto-Applied**: When editing module files
+- **Key Topics**: Application, service, and desktop module patterns
+
+#### [architecture-patterns.mdc](architecture-patterns.mdc)
+- **Purpose**: Development workflow and architecture guidelines
+- **Scope**: Configuration files and module structure
+- **Auto-Applied**: When editing core configuration
+- **Key Topics**: Adding applications, service integration, testing
+
+#### [nix-conventions.mdc](nix-conventions.mdc)
+- **Purpose**: Nix language standards and best practices
+- **Scope**: All Nix files
+- **Auto-Applied**: When editing Nix files
+- **Key Topics**: Code structure, naming, type definitions
+
+#### [file-management.mdc](file-management.mdc)
+- **Purpose**: Configuration file handling and dotfiles management
+- **Scope**: JSON, TOML, and config files
+- **Auto-Applied**: When editing configuration files
+- **Key Topics**: File mappings, symlink management, version control
+
+#### [plan-mode.mdc](plan-mode.mdc)
+- **Purpose**: Communication style for planning and strategizing
+- **Scope**: Planning sessions and task breakdowns
+- **Auto-Applied**: No (manual invocation only)
+- **Key Topics**: Concise communication, task structure, unresolved questions
+
+## Usage Guidelines
+
+### Which Rule to Read When…
+
+- **Need policy or validation guidance?** `nixos-commands.mdc` (always on)
+- **Working on core configuration (`configuration.nix`, flake, etc.)?** `project-overview.mdc`
+- **Adding or editing modules?** `module-patterns.mdc`
+- **Touching .nix code in general?** `nix-conventions.mdc`
+- **Managing config files (JSON/TOML/conf)?** `file-management.mdc`
+- **Planning or strategizing tasks?** `plan-mode.mdc` (use `@plan-mode`)
+
+### Rule Types
+
+1. **Always Applied Rule**: Loaded for all interactions (`nixos-commands.mdc`)
+2. **Auto-Attached Rules**: Triggered via `globs` when editing relevant files
+3. **Manual Rules**: Available on demand via `@ruleName`
+
+## Key Principles
+
+### Configuration Policy
+- **NEVER** add configuration unless explicitly requested
+- **ONLY** add minimal package installation initially
+- **ASK** before adding dotfiles management
+- **ALWAYS** use native config formats
+
+### Command Delegation & Validation
+- **RUN** read-only validation commands yourself (`./script/check.sh`, `nixos-rebuild dry-run --flake .#example`, `nix build --no-link .#nixosConfigurations.example.config.system.build.toplevel --no-update-lock-file --no-write-lock-file`)
+- **DELEGATE** any privileged or state-changing command to the user
+- **PROVIDE** exact commands for user execution
+- **EXPLAIN** what commands do before asking
+
+### Development Workflow
+1. Add minimal package installation
+2. Register module in `applications.nix`
+3. Enable in `configuration.nix`
+4. Run `./script/check.sh`; if successful, ask the user to run their rebuild command
+
+## Quick Reference
+
+### Adding a New Application
+1. Create `modules/<app>/default.nix`
+2. Add to `modules/applications.nix`
+3. Enable in `configuration.nix`
+4. After validation passes, ask the user to run their adapted root-flake rebuild command (e.g. `sudo nixos-rebuild switch --flake .#<host>`)
+
+### Module Structure
+```nix
+{ config, pkgs, lib, ... }:
+with lib;
+let cfg = config.applications.<app>;
+in {
+  options.applications.<app> = {
+    enable = mkEnableOption "<description>";
+  };
+
+  config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [ <app> ];
+  };
+}
+```
+
+### File Mapping
+```nix
+mappings = {
+  config = {
+    source = "settings.json";
+    target = "$HOME/.config/<app>/settings.json";
+  };
+};
+```
+
+## Related Documentation
+
+- [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+- [Nix Flakes](https://nixos.wiki/wiki/Flakes)
+- [Cursor Rules Documentation](https://docs.cursor.com/en/context/rules)
+- Project `README.md` and maintained implementation plans

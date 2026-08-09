@@ -1,0 +1,15 @@
+/private export-ignore
+/private/** export-ignore
+/plans export-ignore
+/plans/** export-ignore
+/.agent-memory export-ignore
+/.agent-memory/** export-ignore
+/.claude/settings.local.json export-ignore
+/inbox export-ignore
+/inbox/** export-ignore
+/logs export-ignore
+/logs/** export-ignore
+**/.cache export-ignore
+**/.cache/** export-ignore
+**/node_modules export-ignore
+**/node_modules/** export-ignore

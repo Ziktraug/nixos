@@ -1,0 +1,24 @@
+---
+description: Agent Memory protocol for durable cross-session coding context
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Agent Memory
+
+Global memory repo: $AGENT_MEMORY_GLOBAL_REPO
+Local repo memory: .agent-memory/
+
+Before multi-step work:
+- Read .agent-memory/index.md if present.
+- Use agent-memory recall --repo "$PWD" --query "<task>" when terminal access is available.
+
+During and after work:
+- Capture durable decisions, patterns, pitfalls, commands, constraints, and handoffs.
+- Prefer agent-memory append for raw capture.
+- At meaningful checkpoints, skip trivial edits and prefer append for a single clear insight.
+- Use distill only when multiple pending signals justify consolidation.
+- If repo-local subagents are available, use memory-distiller in proposal-only mode for dense checkpoint compression.
+- Promote only actionable knowledge.
+- Never store secrets.
+- Treat memory as guidance, not source of truth.

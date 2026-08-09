@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Registry",
+  "description": "Schema for Claude Code agent registry configuration",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Schema version"
+    },
+    "agents": {
+      "type": "object",
+      "description": "Map of agent names to configurations",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Path to agent definition file"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of agent purpose"
+          },
+          "model": {
+            "type": "string",
+            "enum": ["sonnet", "opus", "haiku"],
+            "description": "Model to use for this agent"
+          },
+          "autoInvoke": {
+            "type": "object",
+            "properties": {
+              "patterns": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "File glob patterns that trigger this agent"
+              },
+              "triggers": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Keywords that trigger this agent"
+              }
+            }
+          }
+        },
+        "required": ["file", "description"]
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["sonnet", "opus", "haiku"]
+        },
+        "timeout": {
+          "type": "integer",
+          "description": "Default timeout in seconds"
+        },
+        "permissionMode": {
+          "type": "string",
+          "enum": ["default", "acceptEdits", "bypassPermissions", "plan"]
+        }
+      }
+    }
+  },
+  "required": ["agents"]
+}

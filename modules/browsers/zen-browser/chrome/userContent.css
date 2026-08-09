@@ -1,0 +1,40 @@
+/* Catppuccin Mocha theme for Zen Browser - Content */
+
+@-moz-document url("about:blank"), url("about:newtab"), url("about:home") {
+  :root {
+    /* Catppuccin Mocha palette */
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext0: #a6adc8;
+    --ctp-surface0: #313244;
+    --ctp-mauve: #cba6f7;
+  }
+
+  body {
+    background-color: var(--ctp-base) !important;
+    color: var(--ctp-text) !important;
+  }
+}
+
+/* Style browser internal pages */
+@-moz-document url-prefix("about:") {
+  :root {
+    --in-content-page-background: #1e1e2e !important;
+    --in-content-page-color: #cdd6f4 !important;
+    --in-content-box-background: #313244 !important;
+    --in-content-box-border-color: #45475a !important;
+    --in-content-primary-button-background: #cba6f7 !important;
+    --in-content-primary-button-background-hover: #b4befe !important;
+    --in-content-primary-button-text-color: #1e1e2e !important;
+    --in-content-focus-outline-color: #cba6f7 !important;
+    --link-color: #89b4fa !important;
+    --link-color-hover: #b4befe !important;
+    --link-color-visited: #cba6f7 !important;
+  }
+
+  body {
+    background-color: #1e1e2e !important;
+    color: #cdd6f4 !important;
+  }
+}

@@ -1,0 +1,104 @@
+---
+description: NixOS Command & Validation Policy - Delegate live system changes, run required checks
+globs: ["*.nix", "configuration.nix", "flake.nix", "modules/**/*.nix"]
+alwaysApply: true
+---
+
+# NixOS Command & Validation Policy
+
+## Neutral Git Metadata
+
+- Do not add `Co-authored-by`, `Generated-by`, or any other AI/agent attribution.
+- Do not add harness/tool markers to branch names or PR titles (for example `agent/`, `codex/`, or `[codex]`).
+- Use only the naming requested by the user or repository; otherwise use a plain, descriptive name.
+
+## CRITICAL: Never Execute Live System Changes Yourself
+
+**Delegate privileged or state-altering NixOS commands to the user and wait for their results.**
+
+### Forbidden Actions
+- ❌ `sudo nixos-rebuild switch --flake .#example`
+- ❌ `sudo nixos-rebuild build`
+- ❌ `nix flake update`
+- ❌ `nix flake lock`
+- ❌ Any `sudo` command
+- ❌ Any command that writes or switches the live system (`switch`, `boot`, etc.)
+
+### Correct Behavior
+- ✅ Run read-only validation commands yourself (e.g. `./script/check.sh`, `nixos-rebuild dry-run --flake .#example` without sudo)
+- ✅ Ask the user to execute privileged or state-changing commands
+- ✅ Provide the exact command for the user to run when delegation is required
+- ✅ Explain what the command does before asking
+- ✅ Wait for user confirmation/execution and follow up on results
+- ✅ Immediately run `./script/check.sh` after modifying any `.nix` file and ensure it passes before concluding the task
+
+### Encouraged Self-Checks
+- `./script/check.sh` (mandatory after every Nix configuration edit)
+- `nix build --no-link .#nixosConfigurations.example.config.system.build.toplevel --no-update-lock-file --no-write-lock-file`
+- `nixos-rebuild dry-run --flake .#example` (without sudo)
+
+### Validation Workflow
+1. Edit the relevant `.nix` file(s).
+2. Run `./script/check.sh` immediately.
+3. Address any issues reported by the check.
+4. Repeat until the check succeeds before handing the task back to the user.
+
+### Examples of Correct Interaction
+
+**❌ WRONG - Never do this:**
+```
+I'll run the rebuild command for you:
+sudo nixos-rebuild switch --flake .#example
+```
+
+**❌ WRONG - Never do this:**
+```
+echo "To apply these changes, please run:"
+sudo nixos-rebuild switch --flake .#example
+```
+
+**✅ CORRECT - Always do this:**
+```
+To apply these changes, please run:
+sudo nixos-rebuild switch --flake .#<host>
+
+This command will rebuild your NixOS system with the new configuration.
+```
+
+### Why This Rule Exists
+- System commands can have unintended consequences
+- User should always have control over system modifications
+- Allows user to review commands before execution
+- Maintains user trust and control over their system
+
+### Command Categories to Always Delegate
+1. **System Rebuilds**: `sudo nixos-rebuild switch`
+2. **State-Changing Operations**: `sudo nixos-rebuild boot`, `sudo nixos-rebuild build --install` (or any command that modifies the running system)
+3. **Privileged Commands**: Any invocation requiring `sudo`
+4. **Flake/Lock Updates**: `nix flake update`, `nix flake lock`
+5. **Upgrade Paths**: `sudo nixos-rebuild switch --upgrade`
+
+### Response Template
+When you need a privileged or state-changing command executed, always ask the user with:
+
+```
+To [describe what the command does], please run:
+
+[exact command here]
+
+[brief explanation of what the command does and any expected output]
+```
+
+**IMPORTANT**: Do not use echo statements, scripts, or any wrapper commands. Run read-only validation commands yourself instead of delegating them.
+
+## Violation Examples
+
+**❌ Never:**
+- "Let me rebuild your system"
+- "I'll update your flake"
+- "Running nixos-rebuild for you"
+
+**✅ Always:**
+- "Please run `sudo nixos-rebuild switch --flake .#<host>` after adapting the example to real hardware"
+- "To update your flake, run `nix flake update`"
+- "Execute `nixos-rebuild dry-run --flake .#example` to test the public fixture"

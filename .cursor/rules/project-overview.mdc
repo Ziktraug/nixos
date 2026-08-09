@@ -1,0 +1,92 @@
+---
+description: NixOS Modular Configuration - Project Overview and Architecture
+globs: ["*.nix", "modules/**", "configuration.nix"]
+alwaysApply: false
+---
+
+# NixOS Modular Configuration - Project Overview
+
+## Architecture Summary
+
+This is a **flake-based NixOS configuration** with **modular dotfiles management**. Key architectural patterns:
+
+### Core Structure
+```
+nixos/
+├── hosts/
+│   └── <hostname>/
+│       ├── flake.nix
+│       ├── flake.lock
+│       ├── configuration.nix
+│       ├── hardware-configuration.nix
+│       └── modules.nix
+├── modules/
+│   ├── dotfiles-manager.nix    # Core infrastructure system
+│   ├── applications.nix        # Top-level category aggregator
+│   └── <category>/
+│       ├── default.nix         # Category imports
+│       └── <app>/
+│           ├── default.nix     # Module definition
+│           └── <config-files>  # Native format configs
+└── script/
+```
+
+### Key Design Principles
+
+1. **Flake-Based**: Uses Nix flakes for reproducible builds and dependency management
+2. **Modular**: Each application/service is a self-contained module
+3. **Explicit Mappings**: Clear file-to-file mappings instead of directory mirroring
+4. **Native Formats**: Configuration files kept in their original formats
+5. **Writable Configs**: Symlinks allow applications to modify their configs
+6. **Hierarchical**: Applications grouped by category (desktop-environment, games, etc.)
+
+### Module Patterns
+
+**Simple Application Module** (fish, git, zed):
+- Package installation
+- Basic system integration
+- Optional dotfiles management
+
+**Service Module** (adguardhome, unbound):
+- System service configuration
+- Port management
+- Service-to-service integration
+
+**Complex Desktop Module** (hyprland, waybar):
+- Multi-package setups
+- Hardware integration
+- Display managers and portals
+
+### File Management System
+
+**Dotfiles Flow**:
+1. Config files live in the editable checkout under `modules/<category>/<app>/`.
+2. The user service creates direct symlinks from final targets to those checkout files.
+3. Applications modify the symlink target, so changes appear in Git immediately.
+4. Existing conflicting targets are backed up under `~/.dotfiles-backups/`.
+5. Optional `copyTo` destinations outside `$HOME` are copied separately from an immutable Nix-store source.
+
+**Mapping Syntax**:
+```nix
+mappings = {
+  config = {
+    source = "settings.json";                    # File in module dir
+    target = "$HOME/.config/app/settings.json";  # Symlink destination
+  };
+};
+```
+
+## Development Workflow
+
+1. **Add Application**: Create the module in `modules/<category>/<app>/`
+2. **Register**: Add it to `modules/<category>/default.nix`
+3. **Enable**: Set its real option path in `hosts/example/modules.nix` when the public fixture should cover it
+4. **Validate & Rebuild**: Run read-only checks yourself (`./script/check.sh`, `nixos-rebuild dry-run --flake .#example` without sudo) and ask the user to perform an adapted real-host rebuild (`sudo nixos-rebuild switch --flake .#<host>`)
+
+## Critical Rules
+
+- **NEVER add configuration unless explicitly requested**
+- **ONLY add minimal package installation initially**
+- **ASK before adding dotfiles management**
+- **Use native config formats, no conversion**
+- **Follow established module patterns**

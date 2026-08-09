@@ -1,0 +1,76 @@
+---
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Public export and secret scanning
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3  # v31.10.6
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify public export
+        run: ./script/export-public.sh --check-only
+
+      - name: Scan full repository history
+        if: github.event.repository.name != 'nixos-private'
+        run: nix shell .#gitleaks -c gitleaks git --redact=100 --config .gitleaks.toml --log-opts="--all" .
+
+  nix:
+    name: Nix flake checks
+    needs: security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Reclaim unused runner disk space
+        run: |
+          sudo rm -rf -- \
+            /opt/ghc \
+            /opt/hostedtoolcache/CodeQL \
+            /usr/local/lib/android \
+            /usr/share/dotnet
+          sudo docker image prune --all --force
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3  # v31.10.6
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          extra_nix_config: |
+            auto-optimise-store = true
+            max-jobs = 2
+            min-free = 2147483648
+            max-free = 6442450944
+
+      - name: Run canonical repository checks
+        env:
+          NIXOS_CHECK_FLAKE_REF: git+file:${{ github.workspace }}
+          NIXOS_GC_BEFORE_BUILD: "1"
+          NIXOS_HOST_KEY: example
+        run: ./script/check.sh

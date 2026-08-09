@@ -1,0 +1,23 @@
+[core]
+    excludesfile = ~/.gitignore_global
+
+[include]
+    path = ~/.gitconfig.private
+
+[rebase]
+    autoStash = true
+
+[init]
+    defaultBranch = main
+
+[includeIf "gitdir:~/Projects/Gitlab/"]
+    path = ~/Projects/Gitlab/.gitconfig
+
+[includeIf "gitdir:~/Projects/Github/"]
+    path = ~/Projects/Github/.gitconfig
+
+[includeIf "gitdir:~/Projects/Work/Github/"]
+    path = ~/Projects/Work/Github/.gitconfig
+
+[includeIf "gitdir:~/Projects/Work/Gitlab/"]
+    path = ~/Projects/Work/Gitlab/.gitconfig

@@ -1,0 +1,23 @@
+# Ghostty configuration - Catppuccin Mocha theme
+
+# Theme (Title Case required for Ghostty 1.2.0+)
+theme = Catppuccin Mocha
+
+# Font
+font-family = JetBrainsMono Nerd Font
+font-size = 12
+
+# Window
+window-padding-x = 10
+window-padding-y = 10
+background-opacity = 0.95
+
+# Cursor
+cursor-style = block
+cursor-style-blink = true
+
+# Scrollback
+scrollback-limit = 10000
+
+# Misc
+confirm-close-surface = false

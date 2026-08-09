@@ -1,0 +1,96 @@
+/* Catppuccin Mocha theme for Zen Browser */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+:root {
+  /* Catppuccin Mocha palette */
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+  --ctp-surface0: #313244;
+  --ctp-surface1: #45475a;
+  --ctp-surface2: #585b70;
+  --ctp-overlay0: #6c7086;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay2: #9399b2;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext0: #a6adc8;
+  --ctp-subtext1: #bac2de;
+  --ctp-lavender: #b4befe;
+  --ctp-blue: #89b4fa;
+  --ctp-sapphire: #74c7ec;
+  --ctp-sky: #89dceb;
+  --ctp-teal: #94e2d5;
+  --ctp-green: #a6e3a1;
+  --ctp-yellow: #f9e2af;
+  --ctp-peach: #fab387;
+  --ctp-maroon: #eba0ac;
+  --ctp-red: #f38ba8;
+  --ctp-mauve: #cba6f7;
+  --ctp-pink: #f5c2e7;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-rosewater: #f5e0dc;
+
+  /* Apply Catppuccin colors */
+  --lwt-accent-color: var(--ctp-base) !important;
+  --lwt-text-color: var(--ctp-text) !important;
+  --toolbar-bgcolor: var(--ctp-base) !important;
+  --toolbar-color: var(--ctp-text) !important;
+  --toolbar-field-background-color: var(--ctp-surface0) !important;
+  --toolbar-field-color: var(--ctp-text) !important;
+  --toolbar-field-border-color: var(--ctp-surface1) !important;
+  --toolbar-field-focus-background-color: var(--ctp-surface1) !important;
+  --toolbar-field-focus-border-color: var(--ctp-mauve) !important;
+  --urlbar-box-bgcolor: var(--ctp-surface0) !important;
+  --urlbar-box-hover-bgcolor: var(--ctp-surface1) !important;
+  --urlbar-box-active-bgcolor: var(--ctp-surface2) !important;
+  --urlbar-box-text-color: var(--ctp-text) !important;
+
+  /* Tab colors */
+  --tab-line-color: var(--ctp-mauve) !important;
+  --lwt-tab-text: var(--ctp-text) !important;
+  --lwt-selected-tab-background-color: var(--ctp-surface0) !important;
+
+  /* Sidebar */
+  --lwt-sidebar-background-color: var(--ctp-mantle) !important;
+  --lwt-sidebar-text-color: var(--ctp-text) !important;
+
+  /* Popup panels */
+  --arrowpanel-background: var(--ctp-base) !important;
+  --arrowpanel-color: var(--ctp-text) !important;
+  --arrowpanel-border-color: var(--ctp-surface1) !important;
+}
+
+/* Menu styling */
+menupopup,
+panel {
+  --panel-background: var(--ctp-base) !important;
+  --panel-color: var(--ctp-text) !important;
+  background-color: var(--ctp-base) !important;
+  color: var(--ctp-text) !important;
+}
+
+menuitem:hover,
+menu:hover {
+  background-color: var(--ctp-surface0) !important;
+}
+
+/* Selection highlight */
+::selection {
+  background-color: var(--ctp-surface2) !important;
+  color: var(--ctp-text) !important;
+}
+
+/* Scrollbar styling */
+scrollbar {
+  background-color: var(--ctp-mantle) !important;
+}
+
+scrollbar thumb {
+  background-color: var(--ctp-surface2) !important;
+  border-radius: 4px !important;
+}
+
+scrollbar thumb:hover {
+  background-color: var(--ctp-overlay0) !important;
+}

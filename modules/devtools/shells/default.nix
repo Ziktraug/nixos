@@ -1,0 +1,9 @@
+{ ... }:
+
+{
+  imports = [
+    ./fish
+    ./direnv
+    ./aliases
+  ];
+}

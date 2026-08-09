@@ -1,0 +1,232 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openai/gpt-5.6-sol",
+  "small_model": "opencode-go/deepseek-v4-flash",
+  "default_agent": "lead-codex",
+  "instructions": ["RTK.md", "AGENT_MEMORY.md"],
+  "plugin": ["./plugins/openrtk.ts"],
+  "agent": {
+    "lead-codex": {
+      "mode": "primary",
+      "model": "openai/gpt-5.6-sol",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "description": "Full OpenAI lead: Sol for architecture, final decisions, risky edits, NixOS changes, complex TypeScript/fullstack work.",
+      "prompt": "You are the lead agent. Delegate aggressively to explore-fast, code-worker, fullstack-worker, hard-reasoner, review, and memory-curator. Keep Sol responsible for final decisions, architecture, risky edits, NixOS changes, security-sensitive work, and validation strategy."
+    },
+    "lead-go": {
+      "mode": "primary",
+      "model": "opencode-go/minimax-m3",
+      "description": "Full OpenCode Go lead: MiniMax M3 for architecture, orchestration, implementation decisions.",
+      "prompt": "You are the lead agent. Delegate aggressively to explore-fast-go, code-worker-go, fullstack-worker-go, review-go, memory-curator-go, and only hard-reasoner-go for genuinely difficult problems."
+    },
+    "lead-mixed": {
+      "mode": "primary",
+      "model": "openai/gpt-5.6-sol",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "description": "Mixed lead: GPT-5.6 Sol for architecture and decisions, OpenCode Go workers for volume.",
+      "prompt": "You are the lead agent. Delegate aggressively. Use explore-fast-go for repository exploration, code-worker-go for routine implementation, fullstack-worker-go for large multi-file tasks, review-go for independent code review, and memory-curator-go for memory hygiene. Keep Sol responsible for architecture, final decisions, risky edits, difficult debugging, and security-sensitive work."
+    },
+
+    "explore-fast": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-luna",
+      "reasoningEffort": "low",
+      "textVerbosity": "low",
+      "description": "OpenAI: fast repository exploration, file search, config reading, call-path tracing. Do not edit files.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "explore-fast-go": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash",
+      "description": "Go: fast repository exploration, file search, config reading, call-path tracing. Do not edit files.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "code-worker": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "textVerbosity": "low",
+      "description": "OpenAI: low-risk coding, small TypeScript fixes, routine tests, simple refactors, implementation drafts. Avoid NixOS system changes.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "code-worker-go": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-pro",
+      "description": "Go: scoped implementation, TypeScript fixes, tests, refactors, bug fixes, backend changes.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "fullstack-worker": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "reasoningEffort": "medium",
+      "textVerbosity": "low",
+      "description": "OpenAI: TypeScript fullstack, frontend components, React flows, API wiring, app-level coding. Avoid NixOS unless lead explicitly scopes.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "fullstack-worker-go": {
+      "mode": "subagent",
+      "model": "opencode-go/minimax-m3",
+      "description": "Go: substantial TypeScript fullstack, frontend components, React flows, API wiring, UI work, multi-file tasks.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "hard-reasoner": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "description": "OpenAI: hard debugging, ambiguous failures, large-context analysis, second opinions. Prefer read-heavy over edits.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "hard-reasoner-go": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.8-max",
+      "description": "Go: spare usage for hard debugging, architecture disputes, ambiguous failures, high-value second opinions.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "review": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-terra",
+      "reasoningEffort": "high",
+      "textVerbosity": "low",
+      "description": "OpenAI: focused code review, regression hunting, security and maintainability checks.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      },
+      "prompt": "You are a review subagent. Review the requested diff, files, or implementation from a code-review stance. Prioritize concrete bugs, regressions, security issues, data-loss risks, broken validation, and missing tests. Lead with findings ordered by severity and include precise file and line references when available. Keep summaries brief and secondary. Do not edit files."
+    },
+
+    "review-go": {
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.2",
+      "description": "Go: independent code review, regression hunting, security checks, validation strategy.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      },
+      "prompt": "Review from a code-review stance. Prioritize concrete bugs, regressions, security issues, data-loss risks, broken validation, and missing tests. Lead with findings ordered by severity and include precise file and line references. Do not edit files."
+    },
+
+    "memory-curator": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-luna",
+      "reasoningEffort": "low",
+      "textVerbosity": "low",
+      "description": "OpenAI: agent-memory recall, second-brain curation, checkpoint distillation, memory hygiene. Never store secrets.",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "agent-memory*": "allow",
+          "recent-work-context*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git add*": "allow",
+          "git commit*": "allow",
+          "sudo*": "deny",
+          "nixos-rebuild switch*": "deny",
+          "nixos-rebuild boot*": "deny",
+          "nix flake update*": "deny",
+          "nix flake lock*": "deny",
+          "git push*": "deny",
+          "*": "ask"
+        },
+        "task": "deny"
+      },
+      "prompt": "You curate durable agent memory. Before work, recall relevant memory with agent-memory recall --repo \"$PWD\" --query \"<task>\" when useful. At checkpoints, identify only decisions, patterns, pitfalls, commands, constraints, lessons, preferences, or handoffs that should change future agent behavior. Prefer proposal-only summaries unless the user or lead explicitly asks you to append/distill. Never store secrets, credentials, raw chat dumps, or generic observations. Use repo scope for project-specific guidance and global scope only for cross-repo behavior."
+    },
+
+    "memory-curator-go": {
+      "mode": "subagent",
+      "model": "opencode-go/mimo-v2.5",
+      "description": "Go: cheap agent-memory recall, checkpoint distillation, durable memory proposals, memory hygiene.",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "agent-memory*": "allow",
+          "recent-work-context*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git add*": "allow",
+          "git commit*": "allow",
+          "sudo*": "deny",
+          "nixos-rebuild switch*": "deny",
+          "nixos-rebuild boot*": "deny",
+          "nix flake update*": "deny",
+          "nix flake lock*": "deny",
+          "git push*": "deny",
+          "*": "ask"
+        },
+        "task": "deny"
+      }
+    }
+  },
+  "permission": {
+    "bash": {
+      "agent-memory*": "allow",
+      "playwright-cli*": "allow",
+      "recent-work-context*": "allow",
+      "bun scripts/recent-work-context.ts*": "allow",
+      "rtk ls*": "allow",
+      "rtk grep*": "allow",
+      "rtk read*": "allow",
+      "rtk find*": "allow",
+      "rtk tree*": "allow",
+      "rtk diff*": "allow",
+      "rtk git status*": "allow",
+      "rtk git diff*": "allow",
+      "rtk git log*": "allow",
+      "rtk git show*": "allow",
+      "rtk git add*": "allow",
+      "rtk git commit*": "allow",
+      "rtk git push*": "deny",
+      "rtk nix flake update*": "deny",
+      "rtk nix flake lock*": "deny"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+# Mako notification daemon configuration
+
+# Position
+anchor=top-right
+margin=10
+padding=15
+
+# Style
+width=350
+height=150
+border-size=2
+border-radius=10
+font=monospace 11
+
+# Colors (Catppuccin Mocha inspired)
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#89b4fa
+progress-color=over #313244
+
+# Behavior
+default-timeout=5000
+ignore-timeout=0
+max-visible=3
+sort=-time
+
+# Icons
+icons=1
+max-icon-size=48
+icon-path=/run/current-system/sw/share/icons/Papirus-Dark
+
+# Urgency levels
+[urgency=low]
+border-color=#94e2d5
+
+[urgency=normal]
+border-color=#89b4fa
+
+[urgency=high]
+border-color=#f38ba8
+default-timeout=0

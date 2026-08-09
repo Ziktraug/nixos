@@ -1,0 +1,81 @@
+{
+  "update.mode": "none",
+  "telemetry.telemetryLevel": "off",
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Droid Sans Mono', 'monospace'",
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.5,
+  "editor.renderWhitespace": "selection",
+  "editor.minimap.enabled": true,
+  "editor.codeLens": true,
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "explicit",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "never"
+  },
+  "diffEditor.renderSideBySide": true,
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmPasteNative": false,
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.editor.customLabels.patterns": {
+    "**/app/**/layout.tsx": "${dirname(1)}/${dirname} <layout>",
+    "**/app/**/page.tsx": "${dirname(1)}/${dirname} <page>",
+    "**/app/api/**/route.ts": "${dirname(1)}/${dirname} <route>"
+  },
+  "workbench.activityBar.orientation": "vertical",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.sideBar.location": "right",
+  "workbench.statusBar.visible": true,
+  "git.blame.editorDecoration.enabled": true,
+  "git.blame.editorDecoration.template": "${authorName}, ${authorDateAgo} • ${subject}",
+  "git.confirmForcePush": false,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.mergeEditor": true,
+  "git.pullBeforeCheckout": true,
+  "git.showPushSuccessNotification": true,
+  "git.allowForcePush": true,
+  "git.autoStash": true,
+  "git.autofetch": true,
+  "git.blame.statusBarItem.enabled": true,
+  "git.blame.statusBarItem.template": "${authorName}, ${authorDateAgo} • ${subject}",
+  "window.commandCenter": true,
+  "typescript.format.enable": false,
+  "typescript.format.indentSwitchCase": false,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.inlayHints.parameterNames.enabled": "all",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "git-buttons.pushForce": true,
+  "git-buttons.rebase": true,
+  "cSpell.showAutocompleteDirectiveSuggestions": false,
+  "cSpell.showSuggestionsLinkInEditorContextMenu": false,
+  "todo-tree.general.tags": [
+    "TODO",
+    "[ ]",
+    "[x]"
+  ],
+  "cursorStats.showProgressBars": true,
+  "cursorStats.showTotalRequests": true,
+  "redhat.telemetry.enabled": false,
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": "nixd",
+  "nix.serverSettings": {
+    "nixd": {
+      "formatting": {
+        "command": [
+          "nixfmt"
+        ]
+      },
+      "options": {
+        "nixos": {
+          "expr": "(builtins.getFlake (\"path:\" + builtins.getEnv \"NIXOS_FLAKE_PATH\")).nixosConfigurations.${builtins.getEnv \"NIXOS_HOST_KEY\"}.options"
+        }
+      }
+    }
+  },
+  "cursor.composer.usageSummaryDisplay": "always",
+  "claudeCode.preferredLocation": "panel",
+  "window.autoDetectColorScheme": false
+}

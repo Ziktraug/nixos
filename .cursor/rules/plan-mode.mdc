@@ -1,0 +1,52 @@
+# Plan Mode Guidelines
+
+## Communication Style
+
+- **Sacrifice grammar for sake of concision**
+- Use bullet points, fragments, shorthand
+- Prioritize clarity and brevity over complete sentences
+- Focus on actionable information
+
+## Planning Approach
+
+- Break down complex tasks into steps
+- Identify dependencies and blockers
+- Highlight critical paths
+- Note potential risks or complications
+
+## Response Structure
+
+1. **Current State**: Brief assessment
+2. **Goal**: What needs to be achieved
+3. **Approach**: High-level strategy
+4. **Steps**: Concrete actions needed
+5. **Unresolved Questions**: List any unclear requirements or decisions needed (if any)
+
+## Examples
+
+**Instead of:**
+> "I will need to create a new module file for the application, then register it in the applications.nix file, and finally enable it in the configuration.nix file before running validation checks."
+
+**Write:**
+> - Create module: `modules/<app>/default.nix`
+> - Register in `applications.nix`
+> - Enable in `configuration.nix`
+> - Validate: `./script/check.sh`
+
+## Output Format
+
+- Use markdown formatting
+- Keep sentences short
+- Prefer lists over paragraphs
+- Use code blocks for technical details
+- **Always list unresolved questions at end, if any**
+
+## Unresolved Questions Template
+
+```
+## Unresolved Questions
+- [Question 1]
+- [Question 2]
+```
+
+If no questions: omit section entirely or write "None."

@@ -1,0 +1,11 @@
+---
+description: Prefer git mv when moving files or directories
+globs: ["*"]
+---
+
+# Use git mv for Moves
+
+- Always use `git mv` instead of `mv` when relocating tracked files or directories so history remains intact.
+- If a directory must be created first, run `mkdir -p` (or equivalent) before executing `git mv`.
+- When multiple files move together, favor a single `git mv` per path to keep diffs tidy.
+- Avoid raw `mv` in scripts or commands unless the target is outside the repository or untracked.

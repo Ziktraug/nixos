@@ -1,0 +1,96 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages #
+############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and Editor files #
+########################
+*.swp
+*.swo
+*~
+
+# Node.js #
+###########
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Virtual environments #
+########################
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Rust #
+########
+target/
+Cargo.lock
+
+# Backup files #
+################
+*.bak
+*.backup
+*.tmp
+*.temp
+
+# Secret files #
+################
+*.pem
+*.key
+.env.local
+.env.production
+secrets.json
+
+# Cache directories #
+#####################
+.cache/
+.npm/
+.yarn/
+
+# Agent memory #
+################
+.agent-memory/
+
+# Build artifacts #
+###################
+build/
+dist/
+out/
+
+**/.claude/settings.local.json

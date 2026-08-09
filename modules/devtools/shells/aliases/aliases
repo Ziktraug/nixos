@@ -1,0 +1,6 @@
+# Shared script aliases (fish syntax)
+# Uses $NIXOS_REPO environment variable set by dotfiles-manager
+alias rebuild "\$NIXOS_REPO/script/rebuild.sh"
+alias maintenance "\$NIXOS_REPO/script/maintenance.sh"
+alias disk-health "\$NIXOS_REPO/script/disk-health-check.sh"
+alias rebase "\$NIXOS_REPO/script/rebase-on-default.sh"

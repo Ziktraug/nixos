@@ -1,0 +1,133 @@
+/* Catppuccin Mocha theme for Rofi */
+
+* {
+    /* Catppuccin Mocha palette */
+    base:      #1e1e2e;
+    mantle:    #181825;
+    crust:     #11111b;
+
+    surface0:  #313244;
+    surface1:  #45475a;
+    surface2:  #585b70;
+
+    overlay0:  #6c7086;
+    overlay1:  #7f849c;
+    overlay2:  #9399b2;
+
+    text:      #cdd6f4;
+    subtext0:  #a6adc8;
+    subtext1:  #bac2de;
+
+    lavender:  #b4befe;
+    blue:      #89b4fa;
+    sapphire:  #74c7ec;
+    sky:       #89dceb;
+    teal:      #94e2d5;
+    green:     #a6e3a1;
+    yellow:    #f9e2af;
+    peach:     #fab387;
+    maroon:    #eba0ac;
+    red:       #f38ba8;
+    mauve:     #cba6f7;
+    pink:      #f5c2e7;
+    flamingo:  #f2cdcd;
+    rosewater: #f5e0dc;
+
+    /* Theme colors - using Mauve as accent */
+    bg0:       @base;
+    bg1:       @mantle;
+    bg2:       @surface0;
+    bg3:       @surface1;
+    fg0:       @text;
+    fg1:       @subtext1;
+    fg2:       @subtext0;
+    accent:    @mauve;
+
+    background-color: transparent;
+    text-color:       @fg0;
+    margin:           0;
+    padding:          0;
+    spacing:          0;
+}
+
+window {
+    background-color: @bg0;
+    border:           2px solid;
+    border-color:     @accent;
+    border-radius:    12px;
+    width:            600px;
+}
+
+mainbox {
+    padding: 12px;
+}
+
+inputbar {
+    background-color: @bg1;
+    border-radius:    8px;
+    padding:          8px 16px;
+    spacing:          8px;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    text-color: @accent;
+}
+
+entry {
+    placeholder:       "Search...";
+    placeholder-color: @fg2;
+}
+
+message {
+    margin:  12px 0 0;
+    padding: 8px;
+    background-color: @bg1;
+    border-radius:    8px;
+}
+
+textbox {
+    padding: 8px;
+}
+
+listview {
+    background-color: transparent;
+    margin:           12px 0 0;
+    lines:            8;
+    columns:          1;
+    fixed-height:     false;
+}
+
+element {
+    padding:       8px 12px;
+    spacing:       8px;
+    border-radius: 8px;
+}
+
+element normal normal {
+    text-color: @fg0;
+}
+
+element normal urgent {
+    text-color: @red;
+}
+
+element normal active {
+    text-color: @accent;
+}
+
+element selected normal,
+element selected active,
+element selected urgent {
+    background-color: @accent;
+    text-color:       @bg0;
+}
+
+element-icon {
+    size:           1em;
+    vertical-align: 0.5;
+}
+
+element-text {
+    text-color: inherit;
+}

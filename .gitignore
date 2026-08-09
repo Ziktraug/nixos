@@ -1,0 +1,8 @@
+/logs/
+.agent-memory
+.claude/settings.local.json
+/inbox/
+modules/devtools/ai/global-skills/.cache/
+node_modules/
+
+modules/media/vlc/vlc-qt-interface.conf

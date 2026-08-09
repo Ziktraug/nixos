@@ -1,0 +1,15 @@
+[paths]
+# old database file location
+# database_file = "~/.local/share/opencode/opencode.db"
+database_file = "~/.local/share/opencode/opencode-stable.db"
+messages_dir = "~/.local/share/opencode/storage/message"
+export_dir = "~/.local/share/ocmonitor/exports"
+
+[ui]
+table_style = "rich"
+progress_bars = true
+colors = true
+
+[export]
+default_format = "csv"
+include_metadata = true

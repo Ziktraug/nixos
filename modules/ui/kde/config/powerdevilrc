@@ -1,0 +1,11 @@
+# KDE Power Management Configuration
+# Managed via NixOS dotfiles system
+
+[AC][DimDisplay]
+idleTime=3600000
+
+[AC][DPMSControl]
+idleTime=3600000
+
+[AC][SuspendAndShutdown]
+AutoSuspendAction=0

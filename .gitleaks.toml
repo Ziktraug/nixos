@@ -1,0 +1,4 @@
+title = "NixOS public repository Gitleaks configuration"
+
+[extend]
+useDefault = true

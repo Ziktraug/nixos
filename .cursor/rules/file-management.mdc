@@ -1,0 +1,265 @@
+---
+description: File Management and Configuration Patterns for Dotfiles
+globs: ["modules/**/*.json", "modules/**/*.conf", "modules/**/*.toml", "**/*.json", "**/*.conf"]
+alwaysApply: false
+---
+
+# File Management & Configuration Patterns
+
+## Configuration File Organization
+
+### Directory Structure Convention
+```
+modules/<app>/
+├── default.nix         # Module definition
+├── config.json         # Main configuration
+├── settings.toml       # Additional settings
+├── keybindings.json    # Key bindings
+└── README.md          # Module documentation
+```
+
+### File Naming Conventions
+- `config.json` - Main application configuration
+- `settings.json` - Application settings
+- `keybindings.json` - Keyboard shortcuts
+- `config` - Generic config file
+- `*.conf` - Configuration files
+- `*.toml` - TOML format configs
+- `*.yaml` - YAML format configs
+
+## Dotfiles Mapping Patterns
+
+### Standard Config Locations
+```nix
+mappings = {
+  # Standard XDG config
+  config = {
+    source = "config";
+    target = "$HOME/.config/<app>/config";
+  };
+
+  # Settings file
+  settings = {
+    source = "settings.json";
+    target = "$HOME/.config/<app>/settings.json";
+  };
+
+  # Keybindings
+  keys = {
+    source = "keybindings.json";
+    target = "$HOME/.config/<app>/keybindings.json";
+  };
+};
+```
+
+### Specialized Locations
+```nix
+mappings = {
+  # Git configurations
+  global = {
+    source = "gitconfig";
+    target = "$HOME/.gitconfig";
+  };
+
+  # Project-specific git configs
+  work = {
+    source = "work.gitconfig";
+    target = "$HOME/Projects/Work/.gitconfig";
+  };
+
+  # SSH config
+  ssh = {
+    source = "config";
+    target = "$HOME/.ssh/config";
+  };
+
+  # Optional privileged copy outside $HOME
+  system = {
+    source = "app.conf";
+    target = "$HOME/.config/app/app.conf";
+    copyTo = "/etc/app/config.conf";
+  };
+};
+```
+
+### Complex Application Mappings
+```nix
+# VS Code / Cursor
+mappings = {
+  settings = {
+    source = "settings.json";
+    target = "$HOME/.config/Code/User/settings.json";
+  };
+  keybindings = {
+    source = "keybindings.json";
+    target = "$HOME/.config/Code/User/keybindings.json";
+  };
+};
+
+# Fish shell
+mappings = {
+  config = {
+    source = "config.fish";
+    target = "$HOME/.config/fish/config.fish";
+  };
+  functions = {
+    source = "functions";
+    target = "$HOME/.config/fish/functions";
+  };
+};
+```
+
+## File Content Patterns
+
+### JSON Configuration Files
+```json
+{
+  "theme": "Catppuccin Mocha",
+  "fontFamily": "JetBrains Mono",
+  "fontSize": 14,
+  "base_keymap": "VSCode"
+}
+```
+
+### TOML Configuration Files
+```toml
+[theme]
+name = "catppuccin-mocha"
+
+[editor]
+font_family = "JetBrains Mono"
+font_size = 14
+line_height = 1.5
+
+[keymap]
+preset = "vscode"
+```
+
+### Shell Configuration Files
+```bash
+# Fish config
+set -g theme_color_scheme catppuccin-mocha
+set -g fish_greeting ""
+
+# Aliases
+alias ll='ls -la'
+alias ..='cd ..'
+```
+
+### Git Configuration Files
+```gitconfig
+[user]
+    name = Alice Example
+    email = alice@example.com
+
+[core]
+    editor = code --wait
+    pager = delta
+
+[init]
+    defaultBranch = main
+```
+
+## Symlink Management
+
+### How the System Works
+
+1. **Source Files**: Configuration files live in the editable checkout under `modules/<category>/<app>/`.
+2. **Symlinks**: A user service links final targets directly to those checkout files.
+3. **Usage**: Applications write through the symlink, so the repository file changes immediately.
+4. **Conflicts**: Existing targets are moved to a unique path under `~/.dotfiles-backups/`.
+
+### File Flow Example
+```
+~/.config/zed/settings.json
+  -> /srv/alice/nixos/modules/devtools/ide/zed/settings.json
+```
+
+### Debugging Symlinks
+```bash
+# Check symlink target
+ls -la ~/.config/zed/settings.json
+# Output: ~/.config/zed/settings.json -> /srv/alice/nixos/modules/devtools/ide/zed/settings.json
+
+# Verify file exists
+readlink ~/.config/zed/settings.json
+
+# Check the editable repository source
+ls -la /srv/alice/nixos/modules/devtools/ide/zed/settings.json
+```
+
+## Configuration Management Workflow
+
+### Adding New Configuration
+1. **Create Config File**: Add it under `modules/<category>/<app>/`
+2. **Add Mapping**: Define in module's `mappings`
+3. **Rebuild System**: Ask the user to run their adapted root-flake command (e.g. `sudo nixos-rebuild switch --flake .#<host>`)
+4. **Verify**: Check symlinks are created correctly
+
+### Modifying Configuration
+1. **Edit Source**: Modify the file in `modules/<category>/<app>/`, or edit the final symlink.
+2. **Save Changes**: The application writes directly to the repository source.
+3. **Review**: Inspect the repository diff; no copy-back step exists.
+
+### Reviewing Changes
+```bash
+git status --short
+git diff -- modules/devtools/ide/zed/settings.json
+```
+
+## Best Practices
+
+### File Organization
+- Keep related configs together in module directory
+- Use descriptive filenames
+- Include comments in config files where helpful
+- Maintain original application formatting
+
+### Mapping Guidelines
+- Use `$HOME` for user directory references
+- Follow application conventions for target paths
+- Group related mappings logically
+- Document complex mappings with comments
+
+### Version Control
+- Track config files in git
+- Use meaningful commit messages
+- Consider separate branches for experimental configs
+- Document breaking changes
+
+### Security Considerations
+- Avoid storing sensitive data in configs
+- Use appropriate file permissions
+- Consider encryption for sensitive configs
+- Review configs before committing
+
+## Common Patterns by Application Type
+
+### Text Editors (Zed, VS Code, Vim)
+- Settings, keybindings, snippets
+- Theme configurations
+- Plugin/extension settings
+
+### Shells (Fish, Zsh, Bash)
+- Environment variables
+- Aliases and functions
+- Prompt customization
+- Shell-specific settings
+
+### Desktop Environments (Hyprland, i3)
+- Window manager config
+- Keybindings
+- Theme and appearance
+- Startup applications
+
+### Development Tools (Git, Docker)
+- Global configurations
+- Project-specific overrides
+- Authentication settings
+- Tool-specific preferences
+
+### Services (AdGuard, Unbound)
+- Service configuration files
+- Port and network settings
+- Upstream configurations
+- Filtering rules

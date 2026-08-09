@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Claude Code Settings",
+  "description": "Schema for Claude Code project settings",
+  "type": "object",
+  "properties": {
+    "permissions": {
+      "type": "object",
+      "description": "Tool permission configuration",
+      "properties": {
+        "allow": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tools/commands to always allow"
+        },
+        "deny": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tools/commands to always deny"
+        },
+        "ask": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tools/commands to ask permission for"
+        }
+      }
+    },
+    "env": {
+      "type": "object",
+      "description": "Environment variables",
+      "additionalProperties": { "type": "string" }
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Event hook configuration",
+      "properties": {
+        "PreToolUse": { "$ref": "#/definitions/hookArray" },
+        "PostToolUse": { "$ref": "#/definitions/hookArray" },
+        "PermissionRequest": { "$ref": "#/definitions/hookArray" },
+        "UserPromptSubmit": { "$ref": "#/definitions/hookArray" },
+        "Stop": { "$ref": "#/definitions/hookArray" },
+        "SessionStart": { "$ref": "#/definitions/hookArray" },
+        "SessionEnd": { "$ref": "#/definitions/hookArray" }
+      }
+    },
+    "model": {
+      "type": "string",
+      "description": "Default model override"
+    },
+    "attribution": {
+      "type": "object",
+      "properties": {
+        "commit": { "type": "string" },
+        "pr": { "type": "string" }
+      }
+    }
+  },
+  "definitions": {
+    "hookArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "matcher": { "type": "string" },
+          "hooks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["command", "prompt"]
+                },
+                "command": { "type": "string" },
+                "prompt": { "type": "string" },
+                "timeout": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

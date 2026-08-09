@@ -1,0 +1,29 @@
+[
+  {
+    "use_key_equivalents": true,
+    "bindings": {
+      "secondary-b": "project_panel::ToggleFocus",
+      "secondary-shift-g": "git_panel::ToggleFocus",
+      "secondary-ù": "workspace::ToggleBottomDock",
+      "secondary-'": "workspace::ToggleBottomDock",
+      "secondary-shift-l": "agent::ToggleFocus",
+      "secondary-shift-b": "workspace::ToggleRightDock",
+      "ctrl-tab": "pane::ActivateNextItem",
+      "ctrl-shift-tab": "pane::ActivatePreviousItem",
+    },
+  },
+  {
+    "context": "Editor",
+    "use_key_equivalents": true,
+    "bindings": {
+      "secondary-shift-l": "agent::ToggleFocus",
+      "ctrl-space": "editor::ToggleCodeActions",
+    },
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "shift-enter": ["terminal::SendText", "\u001b\r"],
+    },
+  },
+]

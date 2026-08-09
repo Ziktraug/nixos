@@ -1,0 +1,19 @@
+/* Rofi configuration with Catppuccin Mocha theme */
+configuration {
+  modi: "drun,run";
+  show-icons: true;
+  display-drun: "Apps";
+  display-run: "Run";
+  font: "JetBrainsMono Nerd Font 12";
+  icon-theme: "Papirus-Dark";
+
+  /* Better search matching - prioritize prefix matches */
+  matching: "normal";
+  sort: true;
+  sorting-method: "fzf";
+  case-sensitive: false;
+}
+
+@theme "catppuccin-mocha"
+
+

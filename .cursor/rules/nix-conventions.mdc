@@ -1,0 +1,283 @@
+---
+description: Nix Language Conventions and Best Practices
+globs: ["*.nix", "modules/**/*.nix", "**/*.nix"]
+alwaysApply: false
+---
+
+# Nix Language Conventions
+
+## Code Structure Patterns
+
+### Module Header
+```nix
+{ config, pkgs, lib, ... }:
+
+with lib;
+
+let
+  cfg = config.applications.<app>;
+in
+{
+  # Module definition
+}
+```
+
+### Option Definitions
+```nix
+options.applications.<app> = {
+  enable = mkEnableOption "<App description>";
+
+  # Additional options with defaults
+  setting = mkOption {
+    type = types.str;
+    default = "default-value";
+    description = "Description of the setting";
+  };
+
+  # Boolean toggle with default
+  feature = mkOption {
+    type = types.bool;
+    default = true;
+    description = "Enable feature X";
+  };
+
+  # Nested options
+  dotfiles = {
+    enable = mkOption {
+      type = types.bool;
+      default = cfg.enable;
+      description = "Manage dotfiles";
+    };
+  };
+};
+```
+
+### Configuration Blocks
+```nix
+config = mkIf cfg.enable {
+  # Package installation
+  environment.systemPackages = with pkgs; [
+    package1
+    package2
+  ];
+
+  # Program enablement
+  programs.programName.enable = true;
+
+  # Service configuration
+  services.serviceName = {
+    enable = true;
+    setting = cfg.setting;
+    nestedConfig = {
+      option1 = "value1";
+      option2 = cfg.option2;
+    };
+  };
+
+  # Conditional configuration
+  environment.sessionVariables = mkIf cfg.hardwareAccel {
+    VARIABLE_NAME = "value";
+  };
+};
+```
+
+## Naming Conventions
+
+### Variables
+- `cfg` - Configuration object for current module
+- Use descriptive names: `adguardDnsPort`, `unboundUpstreamPort`
+- Boolean flags: `cfg.enable`, `cfg.dotfiles.enable`
+
+### Module Paths
+- `applications.<app>` - Application modules
+- `dotfiles.modules.<app>` - Dotfiles configuration
+- `services.<service>` - System services
+
+### File Names
+- `default.nix` - Main module file
+- `<config>.json` - JSON configuration files
+- `<config>.conf` - Config files
+- `<config>.toml` - TOML configuration files
+
+## Common Patterns
+
+### Conditional Configuration
+```nix
+# Simple conditional
+programs.program = mkIf cfg.enable {
+  enable = true;
+};
+
+# Nested conditional
+dotfiles = mkIf cfg.dotfiles.enable {
+  enable = true;
+  modules.app = {
+    enable = true;
+    mappings = { ... };
+  };
+};
+
+# Multiple conditions
+environment.sessionVariables = mkIf (cfg.enable && cfg.hardwareSupport) {
+  VARIABLE = "value";
+};
+```
+
+### List Operations
+```nix
+# Package lists
+environment.systemPackages = with pkgs; [
+  package1
+  package2
+  package3
+];
+
+# Attribute lists
+services.service.settings = {
+  listOption = [
+    "item1"
+    "item2"
+    cfg.customItem
+  ];
+};
+```
+
+### String Interpolation
+```nix
+# Basic interpolation
+target = "$HOME/.config/${cfg.appName}/config";
+
+# With toString conversion
+address = "127.0.0.1:${toString cfg.port}";
+
+# Path construction
+storePath = "${cfg.modulesPath}/${moduleName}";
+```
+
+### Attribute Set Operations
+```nix
+# Merging configurations
+services.program = {
+  enable = true;
+} // cfg.additionalSettings;
+
+# Conditional attribute sets
+environment.sessionVariables = lib.optionalAttrs cfg.nvidiaSupport {
+  __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+  WLR_NO_HARDWARE_CURSORS = "1";
+};
+```
+
+## Type Definitions
+
+### Common Types Used
+```nix
+# Boolean
+enable = mkOption {
+  type = types.bool;
+  default = true;
+};
+
+# String
+theme = mkOption {
+  type = types.str;
+  default = "default";
+};
+
+# Integer
+port = mkOption {
+  type = types.int;
+  default = 8080;
+};
+
+# List of strings
+packages = mkOption {
+  type = types.listOf types.str;
+  default = [];
+};
+
+# Attribute set
+settings = mkOption {
+  type = types.attrs;
+  default = {};
+};
+
+# Submodule
+modules = mkOption {
+  type = types.attrsOf (types.submodule {
+    options = {
+      enable = mkOption { type = types.bool; default = false; };
+      # ... submodule options
+    };
+  });
+  default = {};
+};
+```
+
+## Function Definitions
+
+### Module Functions
+```nix
+# Simple function
+createModuleLinks = moduleName: moduleConfig:
+  # function body
+
+# Function with multiple parameters
+createMapping = source: target:
+  # function body
+
+# Complex function with let binding
+generateScript = { user, modules, ... }:
+  let
+    userHome = "/home/${user}";
+    # ... local variables
+  in
+  # function body
+```
+
+## Import Patterns
+
+### Module Imports
+```nix
+# Simple imports
+imports = [
+  ./module1
+  ./module2
+];
+
+# Conditional imports
+imports = lib.optionals cfg.enableExtra [
+  ./extra-module1
+  ./extra-module2
+];
+```
+
+## Error Handling
+
+### Assertions
+```nix
+# Configuration validation
+assertions = [
+  {
+    assertion = cfg.port > 1024;
+    message = "Port must be > 1024 for non-root users";
+  }
+];
+```
+
+## Best Practices
+
+1. **Consistent Formatting**: Use consistent indentation and spacing
+2. **Descriptive Names**: Use clear, descriptive variable names
+3. **Modular Code**: Break complex logic into smaller functions
+4. **Documentation**: Add comments for complex logic
+5. **Type Safety**: Use appropriate types for options
+6. **Default Values**: Provide sensible defaults where possible
+
+## Common Anti-Patterns
+
+- Overly complex nested structures
+- Inconsistent naming conventions
+- Missing type definitions
+- Hard-coded values instead of configurable options
+- Deep nesting without clear purpose

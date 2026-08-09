@@ -1,0 +1,230 @@
+---
+description: Module Creation Patterns and Templates for NixOS Applications
+globs: ["modules/**/*.nix", "modules/*/default.nix"]
+alwaysApply: false
+---
+
+# Module Creation Patterns
+
+## Standard Module Template
+
+Use this template for **ALL** new application modules:
+
+```nix
+{ config, pkgs, lib, ... }:
+
+with lib;
+
+let
+  cfg = config.applications.<app>;
+in
+{
+  options.applications.<app> = {
+    enable = mkEnableOption "<App description>";
+
+    dotfiles = {
+      enable = mkOption {
+        type = types.bool;
+        default = cfg.enable;
+        description = "Manage <app> dotfiles";
+      };
+    };
+  };
+
+  config = mkIf cfg.enable {
+    # Package installation
+    environment.systemPackages = with pkgs; [
+      <app>
+    ];
+
+    # System integration (if needed)
+    # programs.<app>.enable = true;
+    # users.users.alice.shell = pkgs.<app>;
+
+    # Environment variables (if needed)
+    # environment.sessionVariables = { ... };
+
+    # Dotfiles management (ONLY if explicitly requested)
+    dotfiles = mkIf cfg.dotfiles.enable {
+      enable = true;
+      modules.<app> = {
+        enable = true;
+        mappings = {
+          # Explicit file mappings here
+        };
+      };
+    };
+  };
+}
+```
+
+## Module Categories & Patterns
+
+### 1. Simple Application Module (fish, git, zed)
+
+**Pattern**: Basic package + optional dotfiles
+**Location**: `modules/<app>/default.nix`
+**Example**: fish, git, cursor, zed
+
+```nix
+# modules/fish/default.nix
+config = mkIf cfg.enable {
+  environment.systemPackages = with pkgs; [ fish ];
+  programs.fish.enable = true;
+  users.users.alice.shell = pkgs.fish;
+
+  dotfiles.modules.fish = {
+    enable = true;
+    mappings = {
+      config = {
+        source = "config.fish";
+        target = "$HOME/.config/fish/config.fish";
+      };
+    };
+  };
+};
+```
+
+### 2. Service Module (adguardhome, unbound)
+
+**Pattern**: System service configuration
+**Location**: `modules/<service>/default.nix`
+**Example**: adguardhome, unbound
+
+```nix
+# modules/adguardhome/default.nix
+config = mkIf cfg.enable {
+  services.adguardhome = {
+    enable = true;
+    port = 3010;
+    settings = {
+      dns = {
+        bind_hosts = [ "127.0.0.1" "::1" ];
+        port = 53;
+        upstream_dns = [ "127.0.0.1:5335" ];
+      };
+      # ... service configuration
+    };
+  };
+};
+```
+
+### 3. Complex Desktop Module (hyprland, waybar)
+
+**Pattern**: Multi-package + hardware integration
+**Location**: `modules/desktop-environment/<app>/default.nix`
+**Example**: hyprland, waybar
+
+```nix
+# modules/desktop-environment/hyprland/default.nix
+config = mkIf cfg.enable {
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    xfce.thunar grim slurp wl-clipboard
+    pavucontrol brightnessctl
+  ];
+
+  environment.sessionVariables = {
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    WLR_NO_HARDWARE_CURSORS = "1";
+  };
+
+  security.polkit.enable = true;
+  services.greetd.enable = true;
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+};
+```
+
+## File Mapping Conventions
+
+### Target Path Patterns
+
+- `$HOME/.config/<app>/` - Standard config location
+- `$HOME/.local/share/<app>/` - Data files
+- `$HOME/Projects/<context>/.gitconfig` - Project-specific configs
+- `/etc/<app>/` - System-wide configs
+
+### Mapping Examples
+
+```nix
+mappings = {
+  # Single config file
+  settings = {
+    source = "settings.json";
+    target = "$HOME/.config/zed/settings.json";
+  };
+
+  # Multiple related files
+  config = {
+    source = "config";
+    target = "$HOME/.config/i3/config";
+  };
+  status = {
+    source = "i3status.conf";
+    target = "$HOME/.config/i3status/config";
+  };
+
+  # Project-specific configs
+  work-git = {
+    source = "work.gitconfig";
+    target = "$HOME/Projects/Work/.gitconfig";
+  };
+};
+```
+
+## Module Registration
+
+### 1. Add to Applications Registry
+
+```nix
+# modules/applications.nix
+imports = [
+  # ... existing imports
+  ./<new-app>
+];
+```
+
+### 2. Enable in Main Config
+
+```nix
+# configuration.nix
+applications = {
+  # ... existing apps
+  <new-app>.enable = true;
+};
+```
+
+### 3. Optional: Add to Category
+
+```nix
+# modules/games/default.nix (if it's a game)
+imports = [
+  # ... existing games
+  ./<new-game>
+];
+```
+
+## Best Practices
+
+1. **Start Minimal**: Only add package installation initially
+2. **Ask for Config**: Don't add dotfiles management unless requested
+3. **Follow Conventions**: Use established patterns and naming
+4. **Test Thoroughly**: Run read-only validations yourself (e.g. `./script/check.sh`, `nixos-rebuild dry-run --flake .#example` without sudo) and then ask the user to run privileged rebuilds when ready
+5. **Document Changes**: Update relevant documentation
+
+## Common Mistakes to Avoid
+
+- Adding configuration files without explicit request
+- Creating unnecessary environment variables
+- Including "helpful" defaults or themes
+- Forgetting to register modules in applications.nix
+- Not testing system rebuild after changes

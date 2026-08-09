@@ -1,0 +1,9 @@
+{
+  "description": "Displays Logitech mouse and headset battery levels in the GNOME top bar",
+  "name": "Logitech Battery Indicator",
+  "shell-version": [
+    "50"
+  ],
+  "uuid": "logitech-battery@example.com",
+  "version": 1
+}

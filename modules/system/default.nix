@@ -1,0 +1,8 @@
+{ ... }:
+
+{
+  imports = [
+    ./btop
+    ./mission-center
+  ];
+}

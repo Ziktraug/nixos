@@ -1,0 +1,342 @@
+---
+description: Architecture Patterns and Development Workflow for NixOS Modules
+globs: ["modules/**/*.nix", "configuration.nix", "flake.nix"]
+alwaysApply: false
+---
+
+# Architecture Patterns & Development Workflow
+
+## Core Architecture Overview
+
+### Flake-Based Structure
+```
+flake.nix (Entry Point)
+├── inputs: nixpkgs, phoenix, custom packages
+├── outputs: nixosConfigurations.example
+└── modules: configuration.nix + hardware + custom modules
+```
+
+### Hierarchical Module System
+```
+configuration.nix (Main Config)
+├── hardware-configuration.nix
+├── modules/dotfiles-manager.nix (Core Infrastructure)
+├── modules/applications.nix (Module Registry)
+└── modules/*/default.nix (Individual Modules)
+```
+
+### Module Categories
+- **Applications**: User-facing programs (zed, git, fish)
+- **Services**: System services (adguardhome, unbound)
+- **Desktop Environment**: UI components (hyprland, waybar)
+- **Games**: Gaming applications (steam, gamemode)
+- **Development**: Dev tools (nix-dev, direnv)
+
+## Development Workflow Patterns
+
+### 1. Adding a New Application
+
+**Step 1: Create Module Structure**
+```bash
+mkdir -p modules/<app>
+touch modules/<app>/default.nix
+```
+
+**Step 2: Implement Basic Module**
+```nix
+# modules/<app>/default.nix
+{ config, pkgs, lib, ... }:
+
+with lib;
+
+let cfg = config.applications.<app>;
+in {
+  options.applications.<app> = {
+    enable = mkEnableOption "<App description>";
+  };
+
+  config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [ <app> ];
+  };
+}
+```
+
+**Step 3: Register Module**
+```nix
+# modules/applications.nix
+imports = [
+  # ... existing imports
+  ./<app>
+];
+```
+
+**Step 4: Enable Application**
+```nix
+# configuration.nix
+applications = {
+  # ... existing apps
+  <app>.enable = true;
+};
+```
+
+**Step 5: Test Deployment**
+- Ask the user to build or switch the system using the standard delegation template.
+- You may suggest `nixos-rebuild dry-run --flake .#example` (no sudo) or `nix build --no-link .#nixosConfigurations.example.config.system.build.toplevel --no-update-lock-file --no-write-lock-file` when a read-only check is needed.
+
+### 2. Adding Configuration Management
+
+**Only do this if explicitly requested!**
+
+**Step 1: Add Config Files**
+```bash
+# Create native format config files
+touch modules/<app>/settings.json
+touch modules/<app>/config.toml
+```
+
+**Step 2: Update Module with Dotfiles**
+```nix
+# modules/<app>/default.nix
+let cfg = config.applications.<app>;
+in {
+  options.applications.<app> = {
+    enable = mkEnableOption "<App description>";
+
+    dotfiles = {
+      enable = mkOption {
+        type = types.bool;
+        default = cfg.enable;
+        description = "Manage <app> dotfiles";
+      };
+    };
+  };
+
+  config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [ <app> ];
+
+    dotfiles = mkIf cfg.dotfiles.enable {
+      enable = true;
+      modules.<app> = {
+        enable = true;
+        mappings = {
+          settings = {
+            source = "settings.json";
+            target = "$HOME/.config/<app>/settings.json";
+          };
+          config = {
+            source = "config.toml";
+            target = "$HOME/.config/<app>/config.toml";
+          };
+        };
+      };
+    };
+  };
+}
+```
+
+### 3. Adding a Service Module
+
+**Pattern for System Services**
+```nix
+# modules/<service>/default.nix
+{ config, lib, ... }:
+
+with lib;
+
+let cfg = config.applications.<service>;
+in {
+  options.applications.<service> = {
+    enable = mkEnableOption "<Service description>";
+  };
+
+  config = mkIf cfg.enable {
+    services.<service> = {
+      enable = true;
+      # Service-specific configuration
+      port = 8080;
+      settings = {
+        # Configuration options
+      };
+    };
+  };
+}
+```
+
+### 4. Adding Desktop Environment Components
+
+**Pattern for Complex UI Modules**
+```nix
+# modules/desktop-environment/<component>/default.nix
+{ config, pkgs, lib, ... }:
+
+with lib;
+
+let cfg = config.applications.<component>;
+in {
+  options.applications.<component> = {
+    enable = mkEnableOption "<Component description>";
+  };
+
+  config = mkIf cfg.enable {
+    # Core component
+    programs.<component>.enable = true;
+
+    # Supporting packages
+    environment.systemPackages = with pkgs; [
+      # Related packages
+    ];
+
+    # Environment setup
+    environment.sessionVariables = {
+      # Required variables
+    };
+
+    # System integration
+    security.polkit.enable = true;
+    services.<service>.enable = true;
+
+    # Optional: Display manager
+    services.greetd.settings.default_session.command = "...";
+  };
+}
+```
+
+## Module Interaction Patterns
+
+### Service Integration
+```nix
+# modules/adguardhome/default.nix
+services.adguardhome = {
+  enable = true;
+  settings = {
+    dns = {
+      upstream_dns = [
+        "127.0.0.1:${toString config.services.unbound.port}"
+      ];
+    };
+  };
+};
+```
+
+### Conditional Dependencies
+```nix
+# Only enable if another service is enabled
+config = mkIf (cfg.enable && config.services.otherService.enable) {
+  # Additional configuration
+};
+```
+
+### Cross-Module References
+```nix
+# Reference another module's configuration
+let
+  otherPort = config.services.otherService.port;
+in {
+  services.currentService = {
+    port = otherPort + 1;  # Use port after other service
+  };
+};
+```
+
+## Configuration Management Patterns
+
+### Environment Variables
+```nix
+environment.sessionVariables = {
+  # Global variables
+  EDITOR = "zed";
+
+  # Hardware-specific
+  __GLX_VENDOR_LIBRARY_NAME = lib.mkIf cfg.nvidiaSupport "nvidia";
+
+  # Application-specific
+  ZED_ALLOW_EMULATED_GPU = "0";
+};
+```
+
+### System Packages
+```nix
+environment.systemPackages = with pkgs; [
+  # Core application
+  application
+
+  # Supporting tools
+  supporting-tool1
+  supporting-tool2
+
+  # Conditional packages
+] ++ lib.optionals cfg.extraTools [
+  extra-tool1
+  extra-tool2
+];
+```
+
+### User Configuration
+```nix
+users.users.alice = {
+  shell = lib.mkIf cfg.enableShell pkgs.fish;
+  extraGroups = [ "group1" "group2" ];
+};
+```
+
+## Testing & Validation Patterns
+
+### Module Testing Checklist
+- [ ] Module builds without errors
+- [ ] Application installs correctly
+- [ ] Configuration files are created
+- [ ] Symlinks point to correct locations
+- [ ] Application starts and functions
+- [ ] User can modify configuration
+
+### Debugging Commands
+```bash
+# Check module syntax
+nix-instantiate --parse modules/<app>/default.nix
+
+# Dry run rebuild (no sudo, read-only)
+nixos-rebuild dry-run --flake .#example
+
+# Build system closure without switching
+nix build --no-link .#nixosConfigurations.example.config.system.build.toplevel --no-update-lock-file --no-write-lock-file
+```
+
+### Common Issues & Solutions
+
+**Issue**: Module not found
+**Solution**: Check `modules/applications.nix` imports
+
+**Issue**: Configuration not applied
+**Solution**: Verify `configuration.nix` has `applications.<app>.enable = true`
+
+**Issue**: Symlinks not created
+**Solution**: Check dotfiles module is enabled and mappings are correct
+
+**Issue**: Service not starting
+**Solution**: Check service configuration and dependencies
+
+## Best Practices
+
+### Code Organization
+- Keep modules focused on single responsibility
+- Use descriptive names and comments
+- Follow established patterns
+- Test changes incrementally
+
+### Configuration Management
+- Start with minimal configuration
+- Add complexity only when needed
+- Document configuration options
+- Version control all changes
+
+### Maintenance
+- Regularly update flake inputs
+- Test rebuilds after changes
+- Keep documentation current
+- Review and clean up unused modules
+
+### Collaboration
+- Use clear commit messages
+- Document breaking changes
+- Review module additions
+- Share configuration patterns

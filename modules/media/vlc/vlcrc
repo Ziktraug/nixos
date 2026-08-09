@@ -1,0 +1,45 @@
+###
+### VLC configuration for multiple instances and privacy
+###
+
+# Allow only one running instance (boolean)
+one-instance=0
+
+# Use only one instance when started from file manager (boolean)
+one-instance-when-started-from-file=0
+
+# Disable metadata network access (boolean)
+metadata-network-access=0
+
+# Disable privacy ask dialog (boolean)
+qt-privacy-ask=0
+
+# Disable update notifications (boolean)
+qt-updates-notif=0
+
+# Set update check interval to 0 (disable)
+qt-updates-days=0
+
+# Disable crash reporting
+qt-crashreport=0
+
+# Privacy and network interaction settings
+privacy-ask=0
+network-caching=1000
+
+# Disable automatic codec download
+codec-download=0
+
+# Disable online updates
+updater-enabled=0
+
+# Disable statistics collection
+stats=0
+
+# Disable audio/video filters that might phone home
+audio-filter=
+video-filter=
+
+# Set interface to not ask for privacy consent
+qt-minimal-mode=0
+qt-system-tray=0

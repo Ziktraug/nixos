@@ -1,0 +1,10 @@
+{
+  "version": "0.22.1",
+  "tag": "v0.22.1",
+  "assets": {
+    "x86_64-linux": {
+      "file": "ollama-linux-amd64.tar.zst",
+      "hash": "sha256-Hr3a/qkPGCpyE0N8E7kC/ddaYtiAB41eup9JBY1oaBI="
+    }
+  }
+}

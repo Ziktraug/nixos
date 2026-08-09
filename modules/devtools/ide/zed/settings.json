@@ -1,0 +1,226 @@
+{
+  "cli_default_open_behavior": "existing_window",
+  "diff_view_style": "split",
+  "context_servers": {
+    "mcp-server-mui": {
+      "enabled": false,
+      "remote": false,
+      "settings": {},
+    },
+  },
+  "when_closing_with_no_tabs": "platform_default",
+  "redact_private_values": false,
+  "edit_predictions": {
+    "allow_data_collection": "no",
+    "provider": "mercury",
+    "mode": "eager",
+  },
+  "always_treat_brackets_as_autoclosed": true,
+  "colorize_brackets": true,
+  "buffer_font_features": {
+    "calt": false,
+  },
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
+  "git": {
+    "hunk_style": "staged_hollow",
+    "branch_picker": {
+      "show_author_name": true,
+    },
+    "blame": {
+      "show_avatar": true,
+    },
+    "inline_blame": {
+      "show_commit_summary": true,
+    },
+  },
+  "collaboration_panel": {
+    "dock": "left",
+    "button": false,
+  },
+  "git_panel": {
+    "group_by": "staging",
+    "file_icons": true,
+    "tree_view": true,
+    "collapse_untracked_diff": false,
+    "sort_by_path": false,
+    "status_style": "label_color",
+    "dock": "right",
+    "button": true,
+  },
+  "outline_panel": {
+    "git_status": true,
+    "folder_icons": true,
+    "file_icons": false,
+    "dock": "right",
+    "button": false,
+  },
+  "bottom_dock_layout": "contained",
+  "preview_tabs": {
+    "enable_preview_from_file_finder": true,
+    "enable_keep_preview_on_code_navigation": true,
+  },
+  "tabs": {
+    "show_diagnostics": "errors",
+    "file_icons": true,
+    "git_status": true,
+  },
+  "tab_bar": {
+    "show_nav_history_buttons": false,
+    "show": true,
+  },
+  "title_bar": {
+    "show_branch_status_icon": true,
+    "show_menus": false,
+    "show_user_picture": true,
+    "show_onboarding_banner": true,
+    "show_project_items": true,
+    "show_branch_name": true,
+  },
+  "debugger": {
+    "button": false,
+  },
+  "search": {
+    "button": false,
+  },
+  "terminal": {
+    "scrollbar": {
+      "show": "system",
+    },
+    "toolbar": {
+      "breadcrumbs": false,
+    },
+    "button": true,
+  },
+  "status_bar": {
+    "cursor_position_button": true,
+    "active_language_button": true,
+  },
+  "project_panel": {
+    "git_status_indicator": true,
+    "dock": "right",
+    "hide_hidden": false,
+    "hide_root": true,
+    "show_diagnostics": "all",
+    "scrollbar": {
+      "show": "auto",
+    },
+    "indent_size": 16.0,
+    "git_status": true,
+    "folder_icons": false,
+    "file_icons": true,
+    "entry_spacing": "comfortable",
+    "button": true,
+  },
+  "diagnostics": {
+    "button": true,
+    "inline": {
+      "padding": 2,
+      "enabled": true,
+    },
+  },
+  "middle_click_paste": false,
+  "inlay_hints": {
+    "show_background": true,
+    "enabled": false,
+  },
+  "show_whitespaces": "trailing",
+  "indent_guides": {
+    "active_line_width": 3,
+    "background_coloring": "disabled",
+    "coloring": "indent_aware",
+    "line_width": 2,
+    "enabled": true,
+  },
+  "soft_wrap": "editor_width",
+  "tab_size": 2,
+  "toolbar": {
+    "code_actions": true,
+    "breadcrumbs": true,
+  },
+  "minimap": {
+    "max_width_columns": 50,
+    "thumb_border": "left_only",
+    "thumb": "always",
+    "display_in": "active_editor",
+    "show": "auto",
+  },
+  "auto_update": false,
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+  },
+  "icon_theme": "Material Icon Theme",
+  "agent": {
+    "show_turn_stats": true,
+    "favorite_models": [
+      {
+        "provider": "openai-subscribed",
+        "model": "gpt-5.5",
+        "enable_thinking": true,
+        "effort": "xhigh",
+      },
+    ],
+    "tool_permissions": {
+      "default": "allow",
+    },
+    "use_modifier_to_send": true,
+    "dock": "left",
+    "button": true,
+    "play_sound_when_agent_done": "always",
+    "default_model": {
+      "effort": "xhigh",
+      "enable_thinking": true,
+      "provider": "openai-subscribed",
+      "model": "gpt-5.5",
+    },
+    "model_parameters": [],
+    "default_profile": "write",
+  },
+  "theme": "Catppuccin Macchiato",
+  "base_keymap": "VSCode",
+  "agent_servers": {
+    "opencode": {
+      "favorite_config_option_values": {
+        "model": [
+          "opencode-go/deepseek-v4-flash",
+          "opencode-go/deepseek-v4-pro"
+        ]
+      },
+      "default_config_options": {
+        "mode": "build",
+        "effort": "high",
+        "model": "opencode-go/deepseek-v4-pro"
+      },
+      "type": "custom",
+      "command": "/run/current-system/sw/bin/opencode",
+      "args": ["acp"],
+    },
+    "codex-acp": {
+      "default_config_options": {
+        "model": "gpt-5.6-sol",
+        "fast-mode": false,
+        "mode": "agent-full-access",
+        "reasoning_effort": "medium",
+      },
+      "favorite_config_option_values": {
+        "reasoning_effort": ["xhigh"],
+      },
+      "type": "registry",
+    },
+    "cursor": {
+      "default_config_options": {
+        "mode": "agent",
+        "model": "gpt-5.5[context=272k,reasoning=medium,fast=false]",
+      },
+      "type": "registry",
+    },
+    "claude-acp": {
+      "default_config_options": {
+        "effort": "high",
+        "model": "opus[1m]",
+        "mode": "auto",
+      },
+      "type": "registry",
+    },
+  },
+}

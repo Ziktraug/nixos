@@ -1,0 +1,106 @@
+{
+  "$schema": "./schemas/agent-registry.schema.json",
+  "version": "1.0.0",
+  "agents": {
+    "nixos-module-architect": {
+      "file": "agents/nixos-module-architect.md",
+      "description": "Design and implement NixOS modules following project patterns",
+      "model": "sonnet",
+      "autoInvoke": {
+        "patterns": [
+          "modules/**/*.nix",
+          "applications.nix"
+        ],
+        "triggers": [
+          "create module",
+          "new application",
+          "add package"
+        ]
+      }
+    },
+    "config-validator": {
+      "file": "agents/config-validator.md",
+      "description": "Validate NixOS configuration and check for issues",
+      "model": "haiku",
+      "autoInvoke": {
+        "triggers": [
+          "validate",
+          "check config",
+          "flake check"
+        ]
+      }
+    },
+    "dotfiles-expert": {
+      "file": "agents/dotfiles-expert.md",
+      "description": "Manage dotfiles mappings and symlink configurations",
+      "model": "sonnet",
+      "autoInvoke": {
+        "patterns": [
+          "**/mappings*",
+          "dotfiles-manager.nix"
+        ],
+        "triggers": [
+          "dotfiles",
+          "config file",
+          "symlink"
+        ]
+      }
+    },
+    "nixos-debugger": {
+      "file": "agents/nixos-debugger.md",
+      "description": "Debug NixOS build failures and configuration errors",
+      "model": "sonnet",
+      "autoInvoke": {
+        "triggers": [
+          "error",
+          "build failed",
+          "debug",
+          "fix"
+        ]
+      }
+    },
+    "service-integrator": {
+      "file": "agents/service-integrator.md",
+      "description": "Configure and integrate systemd services",
+      "model": "sonnet",
+      "autoInvoke": {
+        "patterns": [
+          "**/services/**"
+        ],
+        "triggers": [
+          "service",
+          "systemd",
+          "daemon"
+        ]
+      }
+    },
+    "hyprland-configurator": {
+      "file": "agents/hyprland-configurator.md",
+      "description": "Configure Hyprland and related Wayland components",
+      "model": "sonnet",
+      "autoInvoke": {
+        "patterns": [
+          "**/hyprland/**",
+          "**/waybar/**",
+          "**/rofi/**"
+        ],
+        "triggers": [
+          "hyprland",
+          "waybar",
+          "wayland",
+          "desktop"
+        ]
+      }
+    },
+    "memory-distiller": {
+      "file": "agents/memory-distiller.md",
+      "description": "Compress checkpoint context into proposal-only memory candidates",
+      "model": "haiku"
+    }
+  },
+  "defaults": {
+    "model": "sonnet",
+    "timeout": 300,
+    "permissionMode": "default"
+  }
+}

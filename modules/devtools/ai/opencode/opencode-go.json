@@ -1,0 +1,121 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/minimax-m3",
+  "small_model": "opencode-go/deepseek-v4-flash",
+  "default_agent": "lead",
+  "instructions": ["RTK.md", "AGENT_MEMORY.md"],
+  "plugin": ["./plugins/openrtk.ts"],
+  "agent": {
+    "lead": {
+      "mode": "primary",
+      "model": "opencode-go/minimax-m3",
+      "description": "Primary OpenCode Go agent for architecture, orchestration, implementation decisions, and complex fullstack work.",
+      "prompt": "You are the lead agent. Delegate aggressively. Use DeepSeek V4 Flash for exploration and cheap repository work, DeepSeek V4 Pro for focused implementation, GLM-5.2 for review and independent verification, and Qwen3.8-Max only for genuinely difficult reasoning or high-risk second opinions."
+    },
+
+    "explore-fast": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-flash",
+      "description": "Fast repository exploration, file search, config reading, call-path tracing, and summarization. Do not edit files.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "code-worker": {
+      "mode": "subagent",
+      "model": "opencode-go/deepseek-v4-pro",
+      "description": "Strong coding worker for TypeScript fixes, refactors, tests, backend work, and scoped implementation.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "fullstack-worker": {
+      "mode": "subagent",
+      "model": "opencode-go/minimax-m3",
+      "description": "Use for substantial TypeScript fullstack work, frontend components, React flows, API wiring, UI work, and multi-file implementation.",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "hard-reasoner": {
+      "mode": "subagent",
+      "model": "opencode-go/qwen3.8-max",
+      "description": "Use sparingly for hard debugging, architecture disputes, ambiguous failures, large-context reasoning, and high-value second opinions.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      }
+    },
+
+    "review": {
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.2",
+      "description": "Independent code review, regression hunting, security checks, validation strategy, and adversarial second opinions.",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask",
+        "task": "deny"
+      },
+      "prompt": "Review from a code-review stance. Prioritize concrete bugs, regressions, security issues, data-loss risks, broken validation, and missing tests. Lead with findings ordered by severity and include precise file and line references. Do not edit files."
+    },
+
+    "memory-curator": {
+      "mode": "subagent",
+      "model": "opencode-go/mimo-v2.5",
+      "description": "Cheap agent-memory recall, checkpoint distillation, durable memory proposals, and repository memory hygiene.",
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "agent-memory*": "allow",
+          "recent-work-context*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "git add*": "allow",
+          "git commit*": "allow",
+          "sudo*": "deny",
+          "nixos-rebuild switch*": "deny",
+          "nixos-rebuild boot*": "deny",
+          "nix flake update*": "deny",
+          "nix flake lock*": "deny",
+          "git push*": "deny",
+          "*": "ask"
+        },
+        "task": "deny"
+      }
+    }
+  },
+  "permission": {
+    "bash": {
+      "agent-memory*": "allow",
+      "playwright-cli*": "allow",
+      "recent-work-context*": "allow",
+      "bun scripts/recent-work-context.ts*": "allow",
+      "rtk ls*": "allow",
+      "rtk grep*": "allow",
+      "rtk read*": "allow",
+      "rtk find*": "allow",
+      "rtk tree*": "allow",
+      "rtk diff*": "allow",
+      "rtk git status*": "allow",
+      "rtk git diff*": "allow",
+      "rtk git log*": "allow",
+      "rtk git show*": "allow",
+      "rtk git add*": "allow",
+      "rtk git commit*": "allow",
+      "rtk git push*": "deny",
+      "rtk nix flake update*": "deny",
+      "rtk nix flake lock*": "deny"
+    }
+  }
+}

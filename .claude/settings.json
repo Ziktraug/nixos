@@ -1,0 +1,62 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./script/check.sh:*)",
+      "Bash(nix search:*)",
+      "Bash(nix-instantiate:*)",
+      "Bash(nix build:*)",
+      "Bash(nix eval:*)",
+      "Bash(nixos-rebuild dry-run:*)",
+      "Bash(nixos-rebuild dry-run --flake .#example 2>&1:*)",
+      "Bash(agent-memory:*)",
+      "Bash(recent-work-context:*)",
+      "Bash(hyprctl reload:*)",
+      "Bash(journalctl:*)",
+      "Bash(waybar:*)",
+      "Bash(systemctl status:*)",
+      "Bash(systemctl --user status:*)",
+      "Bash(git show:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+      "Bash(grep:*)",
+      "Bash(nix-store -q:*)",
+      "Bash(pgrep:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(nixos-rebuild switch:*)",
+      "Bash(nixos-rebuild boot:*)",
+      "Bash(nix flake update:*)",
+      "Bash(nix flake lock:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(rm -rf:*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials/**)"
+    ]
+  },
+  "env": {
+    "NIX_CONFIG": "experimental-features = nix-command flakes"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_TOOL_INPUT\" == *.nix ]]; then echo '[hook] Nix file modified - run ./script/check.sh'; fi",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

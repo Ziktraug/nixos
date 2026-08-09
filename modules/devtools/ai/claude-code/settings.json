@@ -1,0 +1,64 @@
+{
+  "cleanupPeriodDays": 9999999999999,
+  "env": {
+    "CLAUDE_CODE_DISABLE_TELEMETRY": "0",
+    "EDITOR": "zed"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run test:*)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run build)",
+      "Bash(./script/check.sh:*)",
+      "Bash(nixos-rebuild dry-run --flake .#example:*)",
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git log)",
+      "Bash(git show)",
+      "Bash(agent-memory *)",
+      "Bash(recent-work-context *)",
+      "Bash(bun scripts/recent-work-context.ts *)",
+      "Read(~/.config/nixos/*)",
+      "Read(~/.gitconfig)",
+      "Read(~/.ssh/config)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)",
+      "Read(~/.cache/ms-playwright/**)",
+      "Bash(npx playwright *)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(wget:*)",
+      "Bash(rm -rf *)",
+      "Bash(:> *)",
+      "Bash(dd *)",
+      "Bash(mkfs *)",
+      "Bash(nix flake update:*)",
+      "Bash(nix flake lock:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./config/credentials.json)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(./**/id_rsa*)",
+      "Read(./**/id_ed25519*)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Edit(./secrets/**)",
+      "Edit(./**/*.pem)",
+      "Edit(./**/*.key)"
+    ]
+  },
+  "model": "opus[1m]",
+  "outputStyle": "Explanatory",
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true
+}
