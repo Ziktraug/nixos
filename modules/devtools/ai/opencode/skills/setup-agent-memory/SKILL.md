@@ -26,7 +26,7 @@ agent-memory doctor
 2. Inspect existing memory state:
 
 ```bash
-agent-memory recall --repo "$PWD" --query "repository setup and conventions"
+agent-memory recall --repo "$PWD"
 ```
 
 3. Install or update repository adapters:
@@ -58,7 +58,7 @@ agent-memory append --scope repo --type decision --title "Short decision" --body
 
 ## Daily Use
 
-- Before non-trivial work, recall relevant memory with `agent-memory recall --repo "$PWD" --query "<task>"`.
+- Before non-trivial work, recall recent memory with `agent-memory recall --repo "$PWD"`.
 - During work, append one clear durable insight when it appears.
 - After meaningful work, run `agent-memory harvest --repo "$PWD" --since 24h`.
 - Distill only at checkpoints where multiple raw signals justify promotion.

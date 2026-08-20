@@ -1,0 +1,530 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "model": "openai/gpt-5.6-sol",
+  "default_agent": "lead-codex",
+  "plugins": [
+    "./v2/plugins/openrtk.ts",
+    "./v2/plugins/secure-agents.ts"
+  ],
+  "agents": {
+    "title": {
+      "model": "openai/gpt-5.6-luna"
+    },
+    "lead-codex": {
+      "mode": "primary",
+      "model": "openai/gpt-5.6-sol",
+      "request": {
+        "body": {
+          "reasoningEffort": "high",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "Default lead for this frontend-heavy challenge. Owns product reasoning, architecture, implementation strategy, final decisions, and validation.",
+      "permissions": [
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "explore-fast",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "code-worker",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "frontend-engineer",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "hard-reasoner",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "review",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "visual-director",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "creative-ui",
+          "effect": "allow"
+        },
+        {
+          "action": "subagent",
+          "resource": "memory-curator",
+          "effect": "allow"
+        }
+      ],
+      "system": "You are the lead agent for a frontend-heavy product challenge. Own product reasoning, architecture, data/UI boundaries, implementation strategy, and final decisions. Optimize for a UI that is operationally useful, coherent, distinctive, accessible, and technically defensible—not merely visually impressive. Delegate repository exploration to explore-fast, routine scoped implementation to code-worker, substantial or high-value frontend implementation to frontend-engineer, difficult debugging or architecture disputes to hard-reasoner, independent technical review to review, visual/UX judgment of rendered interfaces to visual-director, and deliberately divergent visual concepts to creative-ui. Use visual-director at meaningful visual checkpoints rather than for trivial CSS edits. Use creative-ui before convergence when a major screen or interaction still lacks a strong direction. Keep final synthesis and tradeoff decisions yourself. Avoid generic AI-generated SaaS dashboard patterns, gratuitous cards, decorative complexity, and visual choices that weaken information hierarchy or operator workflows. When UI work is implemented, prefer validating the rendered result rather than reasoning from source code alone."
+    },
+    "design-kimi": {
+      "mode": "primary",
+      "model": "opencode-go/kimi-k3",
+      "description": "Direct Kimi K3 visual-design session for screenshots, references, UX critique, art direction, and visual synthesis. Read-only by default.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "playwright-cli*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git status*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git diff*",
+          "effect": "ask"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "You are a senior product designer and frontend art director working on an operational, frontend-heavy product. Judge the rendered interface, not just the source code. Start from user workflow, information hierarchy, density, spatial composition, typography, state communication, affordances, responsive behavior, accessibility, and motion. Be highly sensitive to generic AI/SaaS aesthetics, arbitrary card grids, gratuitous glassmorphism, fake complexity, decorative space motifs, weak hierarchy, and visual novelty that hurts product use. When given screenshots or references, inspect them carefully and distinguish product/UX issues from pure visual taste. Rank recommendations by impact. Prefer a small number of strong changes over broad cosmetic churn. Do not edit files. Produce a concrete design critique or implementation brief that another agent can execute."
+    },
+    "explore-fast": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-luna",
+      "request": {
+        "body": {
+          "reasoningEffort": "low",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "Fast read-only repository exploration, file search, config reading, call-path tracing, and UI architecture mapping.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "code-worker": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-terra",
+      "request": {
+        "body": {
+          "reasoningEffort": "medium",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "Routine scoped implementation: small TypeScript fixes, tests, wiring, mechanical refactors, and low-risk UI changes.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "ask"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "Implement the scoped task with minimal unnecessary churn. Respect existing architecture, design tokens, component boundaries, accessibility, and tests. Do not redesign product behavior unless explicitly asked. Escalate ambiguous product or architecture decisions to the lead."
+    },
+    "frontend-engineer": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "request": {
+        "body": {
+          "reasoningEffort": "high",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "High-value frontend implementation: complex React flows, interaction design, responsive composition, animation, accessibility, and design-system work.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "playwright-cli*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git status*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git diff*",
+          "effect": "ask"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "You are the senior frontend implementation specialist. Translate a validated product/design direction into robust code. Optimize simultaneously for interaction quality, visual hierarchy, accessibility, responsive behavior, maintainability, and consistency with the existing design system. Inspect the rendered result when possible. Do not add ornamental UI or abstraction without a product or engineering reason. Avoid generic dashboard composition, unnecessary cards, arbitrary gradients, and animation without semantic purpose. If the requested visual direction conflicts with operator workflow, data semantics, accessibility, or architecture, surface the conflict instead of silently implementing it."
+    },
+    "visual-director": {
+      "mode": "subagent",
+      "model": "opencode-go/kimi-k3",
+      "description": "Premium visual/UX critic. Use at meaningful visual checkpoints on rendered screenshots, references, hierarchy, composition, interaction, and frontend taste. Read-only.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "playwright-cli*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git status*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git diff*",
+          "effect": "ask"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "You are a senior product designer and frontend art director. Your role is judgment, critique, and direction—not implementation volume. Inspect rendered screenshots and references whenever available. Evaluate user workflow, information hierarchy, density, spatial composition, typography, state communication, affordances, responsive behavior, accessibility, and meaningful motion. Be allergic to generic AI/SaaS aesthetics, arbitrary card grids, gratuitous glassmorphism, decorative complexity, and superficial space-themed styling. Separate usability problems from visual-taste problems. Rank the three highest-impact changes and explain why they improve the product. When a direction is already strong, preserve it instead of redesigning for novelty. Do not edit files."
+    },
+    "creative-ui": {
+      "mode": "subagent",
+      "model": "opencode-go/glm-5.2",
+      "description": "Divergent UI concept specialist. Use before convergence to generate materially different compositions and interaction ideas from textual product constraints. Read-only.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "You are a divergent frontend concept designer. Do not converge immediately on the current implementation. Given product constraints, information architecture, design tokens, and interaction requirements, propose 2-3 materially different interface directions. Each direction must change composition or interaction logic, not merely colors or styling. Avoid generic SaaS dashboards, repetitive card grids, gratuitous glassmorphism, and superficial sci-fi decoration. Prioritize operational clarity, temporal/spatial relationships, dense information design, and distinctive but defensible visual language. Call out tradeoffs. Do not choose the final direction and do not edit files."
+    },
+    "hard-reasoner": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "request": {
+        "body": {
+          "reasoningEffort": "xhigh",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "Hard debugging, ambiguous failures, architecture disputes, complex state/data interactions, and high-value second opinions.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "ask"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "review": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-sol",
+      "request": {
+        "body": {
+          "reasoningEffort": "high",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "Independent technical review: regressions, correctness, accessibility, maintainability, data/UI boundary issues, and missing tests.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "playwright-cli*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git status*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git diff*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git log*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "rtk git show*",
+          "effect": "ask"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "Review from a senior code-review stance. Prioritize concrete bugs, regressions, broken product behavior, accessibility failures, state/data consistency issues, security risks, maintainability problems, and missing tests. For frontend changes, distinguish code correctness from rendered UX quality and inspect the running UI when relevant. Lead with findings ordered by severity and include precise file and line references when available. Do not edit files."
+    },
+    "memory-curator": {
+      "mode": "subagent",
+      "model": "openai/gpt-5.6-luna",
+      "request": {
+        "body": {
+          "reasoningEffort": "low",
+          "textVerbosity": "low"
+        }
+      },
+      "description": "Agent-memory recall, checkpoint distillation, durable memory proposals, and memory hygiene. Never store secrets.",
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "agent-memory *",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "agent-memory recall --repo \"$PWD\"",
+          "effect": "allow"
+        },
+        {
+          "action": "shell",
+          "resource": "recent-work-context*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git status*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git diff*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git log*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git add*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "git commit*",
+          "effect": "ask"
+        },
+        {
+          "action": "shell",
+          "resource": "sudo*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "nixos-rebuild switch*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "nixos-rebuild boot*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "nix flake update*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "nix flake lock*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "git push*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ],
+      "system": "You curate durable agent memory. Before work, recall recent memory with agent-memory recall --repo \"$PWD\" when useful. Add a task-specific --query only when interactive shell approval is available. At checkpoints, identify only decisions, patterns, pitfalls, commands, constraints, lessons, preferences, or handoffs that should change future agent behavior. Prefer proposal-only summaries unless the user or lead explicitly asks you to append/distill. Never store secrets, credentials, raw chat dumps, or generic observations. Use repo scope for project-specific guidance and global scope only for cross-repo behavior."
+    }
+  },
+  "permissions": [
+    {
+      "action": "shell",
+      "resource": "agent-memory *",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "agent-memory recall --repo \"$PWD\"",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "playwright-cli*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "recent-work-context*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "bun scripts/recent-work-context.ts*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk ls*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk grep*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk read*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk find*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk find .",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk tree*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk diff*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git status*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git diff*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git log*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git show*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git add*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git commit*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk git push*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk nix flake update*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "rtk nix flake lock*",
+      "effect": "deny"
+    }
+  ],
+  "media": {
+    "image": {
+      "auto_resize": true,
+      "max_width": 2000,
+      "max_height": 2000,
+      "max_base64_bytes": 5242880
+    }
+  }
+}

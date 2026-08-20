@@ -41,8 +41,11 @@ Do not store raw chat dumps as durable memory. Repo-local raw captures belong in
 Run from the target repository:
 
 ```bash
-agent-memory recall --repo "$PWD" --query "<task>"
+agent-memory recall --repo "$PWD"
 ```
+
+Add `--query "<task>"` only when task-specific ranking is worth an interactive
+shell approval.
 
 Read local memory if present:
 

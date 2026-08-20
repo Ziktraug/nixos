@@ -4,7 +4,7 @@
       "command": "nix",
       "args": [
         "run",
-        "github:utensils/mcp-nixos",
+        "github:utensils/mcp-nixos/fea707cb1aec3e68baf2a815fa292ab9291451e4",
         "--"
       ]
     }

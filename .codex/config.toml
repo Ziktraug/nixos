@@ -1,0 +1,13 @@
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+NIX_CONFIG = "experimental-features = nix-command flakes"
+
+[mcp_servers.nixos]
+command = "nix"
+args = [
+    "run",
+    "github:utensils/mcp-nixos/fea707cb1aec3e68baf2a815fa292ab9291451e4",
+    "--",
+]

@@ -192,7 +192,7 @@
         "model": "opencode-go/deepseek-v4-pro"
       },
       "type": "custom",
-      "command": "/run/current-system/sw/bin/opencode",
+      "command": "/run/current-system/sw/bin/opencode2",
       "args": ["acp"],
     },
     "codex-acp": {
@@ -200,7 +200,7 @@
         "model": "gpt-5.6-sol",
         "fast-mode": false,
         "mode": "agent-full-access",
-        "reasoning_effort": "medium",
+        "reasoning_effort": "max",
       },
       "favorite_config_option_values": {
         "reasoning_effort": ["xhigh"],
@@ -216,7 +216,8 @@
     },
     "claude-acp": {
       "default_config_options": {
-        "effort": "high",
+        "fast": true,
+        "effort": "max",
         "model": "opus[1m]",
         "mode": "auto",
       },

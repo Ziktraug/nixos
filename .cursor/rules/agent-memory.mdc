@@ -11,7 +11,7 @@ Local repo memory: .agent-memory/
 
 Before multi-step work:
 - Read .agent-memory/index.md if present.
-- Use agent-memory recall --repo "$PWD" --query "<task>" when terminal access is available.
+- Use agent-memory recall --repo "$PWD" when terminal access is available.
 
 During and after work:
 - Capture durable decisions, patterns, pitfalls, commands, constraints, and handoffs.

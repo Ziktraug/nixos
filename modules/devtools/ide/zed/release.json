@@ -1,14 +1,14 @@
 {
-  "version": "1.14.2",
-  "tag": "v1.14.2",
+  "version": "1.15.1",
+  "tag": "v1.15.1",
   "assets": {
     "x86_64-linux": {
       "file": "zed-linux-x86_64.tar.gz",
-      "hash": "sha256-HBc619crJxKfl4Nq/YFhUZhbZqYFKWf4v9+X0Z0YgaM="
+      "hash": "sha256-WEDuDz0ZZ2BPL2dF6+xnzPFnwwpzNXgkDSIdUFNQPiw="
     },
     "aarch64-linux": {
       "file": "zed-linux-aarch64.tar.gz",
-      "hash": "sha256-7vn7D4B/ia8UR+6WwaSejy6KpjKFDpujfZAILBlwQF8="
+      "hash": "sha256-sEgcGW4MX8pFfguG7lJppuY8Zer4TbsDZFBVTc0vbaY="
     }
   }
 }

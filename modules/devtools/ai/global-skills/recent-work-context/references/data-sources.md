@@ -5,8 +5,9 @@
 - `~/.claude/projects/*/sessions-index.json`
 - `~/.claude/projects/*/*.jsonl`
 - `~/.local/share/opencode/opencode-stable.db`
+- `~/.local/share/opencode/opencode-next.db`
 
-Version 1 intentionally limits retrieval to Claude Code and OpenCode.
+The OpenCode source merges matching sessions from the stable and V2 preview databases.
 
 ## Repo Matching
 

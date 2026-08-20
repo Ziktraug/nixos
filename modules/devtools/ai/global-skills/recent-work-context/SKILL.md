@@ -1,7 +1,7 @@
 ---
 name: recent-work-context
 description: Search repo-specific prior work from Claude Code and OpenCode histories. Use when you need earlier decisions, file changes, tool outputs, errors, or user preferences for the current repository.
-compatibility: Requires Bun, access to ~/.claude/projects and ~/.local/share/opencode/opencode-stable.db, and works best from inside a git repository.
+compatibility: Requires Bun, access to ~/.claude/projects and the local OpenCode stable/next databases, and works best from inside a git repository.
 argument-hint: [--query "topic" --lens recent --source all --limit 32]
 disable-model-invocation: true
 allowed-tools: Bash(bun scripts/recent-work-context.ts *) Bash(recent-work-context *)

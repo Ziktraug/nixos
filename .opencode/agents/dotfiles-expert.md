@@ -8,6 +8,47 @@ tools:
   glob: true
   grep: true
   bash: true
+permission:
+  edit: ask
+  bash:
+    "*": ask
+    'agent-memory recall --repo "$PWD"': allow
+    "rtk find .": allow
+    "sudo*": deny
+    "nixos-rebuild switch*": deny
+    "nixos-rebuild boot*": deny
+    "nix flake update*": deny
+    "nix flake lock*": deny
+    "git push*": deny
+    "rtk git push*": deny
+    "rtk nix flake update*": deny
+    "rtk nix flake lock*": deny
+    "rm -rf*": deny
+    "rm -r*": deny
+  read:
+    ".env": deny
+    ".env.*": deny
+    "**/.env": deny
+    "**/.env.*": deny
+    secrets: deny
+    "secrets/**": deny
+    "**/secrets": deny
+    "**/secrets/**": deny
+    credentials: deny
+    "credentials/**": deny
+    "**/credentials": deny
+    "**/credentials/**": deny
+    ".git": deny
+    ".git/**": deny
+    "**/.git": deny
+    "**/.git/**": deny
+    private: deny
+    "private/**": deny
+    "**/private": deny
+    "**/private/**": deny
+  glob: ask
+  grep: ask
+  list: ask
 ---
 
 # Dotfiles Management Expert

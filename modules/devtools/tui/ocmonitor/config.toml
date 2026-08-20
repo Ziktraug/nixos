@@ -1,7 +1,6 @@
 [paths]
-# old database file location
-# database_file = "~/.local/share/opencode/opencode.db"
-database_file = "~/.local/share/opencode/opencode-stable.db"
+# OpenCode 2 preview is the default. Use `ocmonitor-v1` for the stable database.
+database_file = "~/.local/share/opencode/opencode-next.db"
 messages_dir = "~/.local/share/opencode/storage/message"
 export_dir = "~/.local/share/ocmonitor/exports"
 

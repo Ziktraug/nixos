@@ -2712,7 +2712,7 @@ Local repo memory: .agent-memory/
 
 Before non-trivial work:
 - Consult local memory in .agent-memory/index.md and recent handoffs.
-- Recall prior sessions with: agent-memory recall --repo "$PWD" --query "<task>"
+- Recall recent sessions with: agent-memory recall --repo "$PWD"
 
 During work:
 - Capture durable discoveries with: agent-memory append --scope repo --type pattern|pitfall|decision --title "..." --body "..."
@@ -2769,7 +2769,7 @@ Local repo memory: .agent-memory/
 
 Before multi-step work:
 - Read .agent-memory/index.md if present.
-- Use agent-memory recall --repo "$PWD" --query "<task>" when terminal access is available.
+- Use agent-memory recall --repo "$PWD" when terminal access is available.
 
 During and after work:
 - Capture durable decisions, patterns, pitfalls, commands, constraints, and handoffs.

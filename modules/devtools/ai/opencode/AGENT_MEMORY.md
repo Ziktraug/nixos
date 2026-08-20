@@ -7,7 +7,7 @@ Use the shared operational memory setup when prior session context may affect th
 From a repository:
 
 ```sh
-agent-memory recall --repo "$PWD" --query "<task>"
+agent-memory recall --repo "$PWD"
 ```
 
 ## Capture

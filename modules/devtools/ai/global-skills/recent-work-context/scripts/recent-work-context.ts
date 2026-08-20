@@ -614,7 +614,20 @@ function parseClaudeSession(session: RankedSession): ContextRecord[] {
 }
 
 function collectOpenCodeRecords(repo: RepoIdentity, sessionLimit: number): ContextRecord[] {
-  const databasePath = path.join(homedir(), ".local", "share", "opencode", "opencode-stable.db");
+  const dataHome = process.env.XDG_DATA_HOME ?? path.join(homedir(), ".local", "share");
+  const opencodeDataDirectory = path.join(dataHome, "opencode");
+
+  return [
+    ...collectOpenCodeStableRecords(path.join(opencodeDataDirectory, "opencode-stable.db"), repo, sessionLimit),
+    ...collectOpenCodeNextRecords(path.join(opencodeDataDirectory, "opencode-next.db"), repo, sessionLimit),
+  ];
+}
+
+function collectOpenCodeStableRecords(
+  databasePath: string,
+  repo: RepoIdentity,
+  sessionLimit: number,
+): ContextRecord[] {
   if (!existsSync(databasePath)) {
     return [];
   }
@@ -710,6 +723,138 @@ function collectOpenCodeRecords(repo: RepoIdentity, sessionLimit: number): Conte
           source: "opencode",
           session,
           timestamp,
+          role: "tool",
+          kind: status === "error" ? "tool-error" : "tool-result",
+          text,
+          files: extractFilesFromUnknown([input, output]),
+          tool,
+          citation,
+        }));
+      }
+    }
+  }
+
+  return records;
+}
+
+function collectOpenCodeNextRecords(
+  databasePath: string,
+  repo: RepoIdentity,
+  sessionLimit: number,
+): ContextRecord[] {
+  if (!existsSync(databasePath)) {
+    return [];
+  }
+
+  using db = new Database(databasePath, { readonly: true, strict: true });
+  const sessionRows = db
+    .query<{
+      id: string;
+      directory: string;
+      time_updated: number;
+    }, []>("select id, directory, time_updated from session_v2 order by time_updated desc")
+    .all();
+
+  const matchingSessions = sessionRows
+    .filter((row) => repoMatches(row.directory, repo))
+    .slice(0, sessionLimit)
+    .map((row) => ({
+      source: "opencode" as const,
+      sessionId: row.id,
+      filePath: databasePath,
+      timestamp: row.time_updated,
+      branch: repo.branch,
+      repoPath: row.directory,
+    }));
+
+  const messageQuery = db.query<
+    {
+      id: string;
+      type: string;
+      seq: number;
+      time_created: number;
+      data: string;
+    },
+    [string]
+  >(
+    `select id, type, seq, time_created, data
+    from session_message
+    where session_id = ?1
+    order by seq asc`
+  );
+  const records: ContextRecord[] = [];
+
+  for (const session of matchingSessions) {
+    for (const row of messageQuery.all(session.sessionId)) {
+      const messageData = safeJsonParse<Record<string, unknown>>(row.data);
+      if (messageData === null) {
+        continue;
+      }
+
+      if (row.type === "user") {
+        const text = collapseWhitespace(asString(messageData.text) ?? "");
+        if (text.length === 0) {
+          continue;
+        }
+        records.push(createRecord({
+          source: "opencode",
+          session,
+          timestamp: row.time_created,
+          role: "user",
+          kind: "message",
+          text,
+          files: extractFilesFromUnknown([text, messageData.files]),
+          tool: null,
+          citation: `${session.sessionId}/${row.id}`,
+        }));
+        continue;
+      }
+
+      if (row.type !== "assistant" || !Array.isArray(messageData.content)) {
+        continue;
+      }
+
+      for (const [contentIndex, rawContent] of messageData.content.entries()) {
+        const content = asRecord(rawContent);
+        const contentType = asString(content?.type);
+        const citation = `${session.sessionId}/${row.id}#${contentIndex + 1}`;
+
+        if (contentType === "text" || contentType === "reasoning") {
+          const text = collapseWhitespace(asString(content?.text) ?? "");
+          if (text.length === 0) {
+            continue;
+          }
+          records.push(createRecord({
+            source: "opencode",
+            session,
+            timestamp: row.time_created,
+            role: "assistant",
+            kind: contentType === "reasoning" ? "reasoning" : "message",
+            text,
+            files: extractFilesFromUnknown(text),
+            tool: null,
+            citation,
+          }));
+          continue;
+        }
+
+        if (contentType !== "tool") {
+          continue;
+        }
+
+        const tool = asString(content?.name);
+        const state = asRecord(content?.state);
+        const input = state?.input;
+        const output = state?.content ?? state?.error;
+        const status = asString(state?.status) ?? "unknown";
+        const text = collapseWhitespace(
+          `${tool ?? "tool"} (${status}) input=${safeStringify(input)} output=${truncate(collapseWhitespace(stringifyUnknown(output)), 240)}`
+        );
+
+        records.push(createRecord({
+          source: "opencode",
+          session,
+          timestamp: row.time_created,
           role: "tool",
           kind: status === "error" ? "tool-error" : "tool-result",
           text,

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); if printf '%s' \"$input\" | jq -e '.tool_name == \"apply_patch\" and any((.tool_input.command // \"\" | split(\"\\n\"))[]; (((startswith(\"*** Add File: \" ) or startswith(\"*** Update File: \" ) or startswith(\"*** Delete File: \" )) and endswith(\".nix\")) or ((startswith(\"--- a/\") or startswith(\"+++ b/\")) and endswith(\".nix\"))))' >/dev/null 2>&1; then jq -nc '{hookSpecificOutput:{hookEventName:\"PostToolUse\",additionalContext:\"A Nix file was modified. Run ./script/check.sh before continuing.\"}}'; fi",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

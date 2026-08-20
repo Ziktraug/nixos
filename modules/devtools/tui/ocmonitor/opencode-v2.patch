@@ -1,0 +1,71 @@
+diff --git a/ocmonitor/utils/sqlite_utils.py b/ocmonitor/utils/sqlite_utils.py
+index 14f6413..411940e 100644
+--- a/ocmonitor/utils/sqlite_utils.py
++++ b/ocmonitor/utils/sqlite_utils.py
+@@ -72,9 +72,67 @@ class SQLiteProcessor:
+         """Create a database connection with proper settings."""
+         conn = sqlite3.connect(db_path, check_same_thread=False)
+         conn.row_factory = sqlite3.Row
++        SQLiteProcessor._install_v2_compatibility_views(conn)
+         return conn
+ 
++    @staticmethod
++    def _install_v2_compatibility_views(conn: sqlite3.Connection) -> None:
++        """Expose the V2 preview schema through ocmonitor's V1 query contract."""
++        table_names = {
++            row["name"]
++            for row in conn.execute(
++                "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')"
++            )
++        }
++        if "session_v2" not in table_names or "session" in table_names:
++            return
++
++        conn.executescript(
++            """
++            CREATE TEMP VIEW session AS
++            SELECT * FROM main.session_v2;
++
++            CREATE TEMP VIEW message AS
++            SELECT
++                sm.id,
++                sm.session_id,
++                sm.time_created,
++                sm.time_updated,
++                json_set(
++                    sm.data,
++                    '$.role', sm.type,
++                    '$.modelID', json_extract(sm.data, '$.model.id'),
++                    '$.providerID', json_extract(sm.data, '$.model.providerID'),
++                    '$.path', json_object(
++                        'cwd', s.directory,
++                        'root', coalesce(p.worktree, s.directory)
++                    )
++                ) AS data
++            FROM main.session_message sm
++            JOIN main.session_v2 s ON s.id = sm.session_id
++            LEFT JOIN main.project p ON p.id = s.project_id;
++
++            CREATE TEMP VIEW part AS
++            SELECT
++                coalesce(
++                    json_extract(content.value, '$.id'),
++                    sm.id || ':' || content.key
++                ) AS id,
++                sm.id AS message_id,
++                sm.session_id,
++                sm.time_created,
++                sm.time_updated,
++                json_set(
++                    content.value,
++                    '$.tool', json_extract(content.value, '$.name')
++                ) AS data
++            FROM main.session_message sm
++            CROSS JOIN json_each(sm.data, '$.content') content
++            WHERE sm.type = 'assistant';
++            """
++        )
++
+     @staticmethod
+     def _extract_model_name(model_data: Any) -> str:
+         """Extract model name from various possible locations in message data."""

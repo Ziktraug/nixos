@@ -40,6 +40,10 @@ let
               opencode = {
                 enable = lib.mkForce true;
                 web.enable = lib.mkForce true;
+                v2 = {
+                  enable = lib.mkForce true;
+                  web.enable = lib.mkForce true;
+                };
               };
               "global-skills".enable = lib.mkForce true;
             };
@@ -107,6 +111,24 @@ in
       if builtins.hasAttr "legacy-user" alternateUserFixture.config.users.users then "1" else "0"
     } = 0
     test ${nixpkgs.lib.escapeShellArg alternateUserFixture.config.systemd.user.services.opencode-web.environment.PATH} != ""
+    case ${nixpkgs.lib.escapeShellArg alternateUserFixture.config.systemd.user.services.opencode2-web.serviceConfig.ExecStart} in
+      *'/bin/opencode2 serve --hostname 127.0.0.1 --port 4097') ;;
+      *) echo "OpenCode 2 service does not use its isolated preview command" >&2; exit 1 ;;
+    esac
+    test ${
+      if builtins.hasAttr "v2-config" alternateUserFixture.config.dotfiles.modules.opencode.mappings then
+        "1"
+      else
+        "0"
+    } = 1
+    test ${
+      nixpkgs.lib.escapeShellArg
+        alternateUserFixture.config.dotfiles.modules.opencode.mappings."v2-plugin-secure-agents".source
+    } = v2/plugins/secure-agents.ts
+    test ${
+      nixpkgs.lib.escapeShellArg
+        alternateUserFixture.config.dotfiles.modules.opencode.mappings."v2-plugin-secure-agents".target
+    } = '$HOME/.config/opencode2/opencode/v2/plugins/secure-agents.ts'
     case ${nixpkgs.lib.escapeShellArg alternateUserFixture.config.systemd.user.services.opencode-web.environment.PATH} in
       *legacy-user*) echo "OpenCode user PATH contains a legacy user" >&2; exit 1 ;;
       *'/etc/profiles/per-user/alice/bin'*) ;;

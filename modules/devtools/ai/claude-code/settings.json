@@ -55,7 +55,7 @@
       "Edit(./**/*.key)"
     ]
   },
-  "model": "opus[1m]",
+  "model": "claude-fable-5[1m]",
   "outputStyle": "Explanatory",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",

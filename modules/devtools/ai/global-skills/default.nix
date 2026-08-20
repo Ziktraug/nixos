@@ -76,6 +76,10 @@ in
           source = "reference-projects/SKILL.md";
           target = "$HOME/.config/opencode/skills/reference-projects/SKILL.md";
         };
+        reference-projects-opencode2-skill = {
+          source = "reference-projects/SKILL.md";
+          target = "$HOME/.config/opencode2/opencode/skills/reference-projects/SKILL.md";
+        };
         pr-review-claude-skill = {
           source = "pr-review/SKILL.md";
           target = "$HOME/.claude/skills/pr-review/SKILL.md";
@@ -87,6 +91,10 @@ in
         pr-review-opencode-skill = {
           source = "pr-review/SKILL.md";
           target = "$HOME/.config/opencode/skills/pr-review/SKILL.md";
+        };
+        pr-review-opencode2-skill = {
+          source = "pr-review/SKILL.md";
+          target = "$HOME/.config/opencode2/opencode/skills/pr-review/SKILL.md";
         };
       };
     };
@@ -117,10 +125,11 @@ in
                 claude_skills="$user_home/.claude/skills"
                 agents_skills="$user_home/.agents/skills"
                 opencode_skills="$user_home/.config/opencode/skills"
+                opencode2_skills="$user_home/.config/opencode2/opencode/skills"
                 cursor_rules="$user_home/.cursor/rules"
                 copilot_instructions="$user_home/.github/instructions"
 
-                mkdir -p "$claude_skills" "$agents_skills" "$opencode_skills" "$cursor_rules" "$copilot_instructions"
+                mkdir -p "$claude_skills" "$agents_skills" "$opencode_skills" "$opencode2_skills" "$cursor_rules" "$copilot_instructions"
 
                 rm -f "$cursor_rules"/matt-pocock-*.mdc
                 rm -f "$copilot_instructions"/matt-pocock-*.instructions.md
@@ -149,7 +158,7 @@ in
                     continue
                   fi
 
-                  for install_dir in "$claude_skills" "$agents_skills" "$opencode_skills"; do
+                  for install_dir in "$claude_skills" "$agents_skills" "$opencode_skills" "$opencode2_skills"; do
                     target="$install_dir/$skill_name"
                     if [ -e "$target" ] && [ ! -L "$target" ]; then
                       echo "Skipping existing non-symlink skill target: $target" >&2

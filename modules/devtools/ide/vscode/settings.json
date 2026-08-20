@@ -73,5 +73,9 @@
   },
   "security.promptForLocalFileProtocolHandling": false,
   "terminal.external.linuxExec": "ghostty",
-  "claudeCode.useCtrlEnterToSend": true
+  "claudeCode.useCtrlEnterToSend": true,
+  "chat.agent.maxRequests": 0,
+  "chat.viewProgressBadge.enabled": true,
+  "chat.restoreLastPanelSession": true,
+  "chat.checkpoints.showFileChanges": true
 }

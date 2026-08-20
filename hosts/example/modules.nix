@@ -40,7 +40,10 @@
       terminals.ghostty.enable = true;
 
       ai = {
-        opencode.enable = true;
+        opencode = {
+          enable = true;
+          v2.enable = true;
+        };
         claude-code.enable = true;
         codex.enable = true;
         "global-skills".enable = true;
